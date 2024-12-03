@@ -1,4 +1,4 @@
-# The GLAM
+# GLAM
 GLycan Analysis Module
 
 # Documentation

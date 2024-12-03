@@ -14,7 +14,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     filter_glycopeptides,
-    peptide_mass,
+    peptide_masses,
     build_glycopeptides,
     convert_to_csv,
 )
@@ -110,13 +110,13 @@ def test_filter_glycopeptides() -> None:
 
 
 def test_peptide_mass() -> None:
-    mass = peptide_mass("PEPTIDE")
-    assert mass == 799.3599640267099
+    masses = peptide_masses({"PEPTIDE", "TIME"})
+    assert masses == {("PEPTIDE", 799.3599640267099), ("TIME", 799.3599640267099)}
 
 
 def test_peptide_mass_raises() -> None:
     with pytest.raises(ValueError) as e:
-        peptide_mass("PEPTIXE")
+        peptide_masses({"PEPTIXE"})
     assert (
         str(e.value)
         == "Unknown amino acid residue found in 'PEPTIXE': No mass data for residue: X"

@@ -84,23 +84,28 @@ def filter_glycopeptides(
     return {p for p in peptides if re.search(glycosylation_motif, p)}
 
 
-def peptide_mass(peptide: str) -> float:
-    try:
-        return pyteomics.mass.fast_mass(peptide)
-    except PyteomicsError as e:
-        raise ValueError(
-            f"Unknown amino acid residue found in '{peptide}': {e.message}"
-        )
+def peptide_masses(peptides: set[str], mod_masses: dict[str, float] = {}) -> set[tuple[str, float]]:
+    def mass(peptide: str) -> float:
+        aa_mass = pyteomics.mass.std_aa_mass | mod_masses
+        try:
+            return pyteomics.mass.fast_mass2(peptide, aa_mass=aa_mass)
+        except PyteomicsError as e:
+            raise ValueError(
+                f"Unknown amino acid residue found in '{peptide}': {e.message}"
+            )
+
+    return {(p, mass(p)) for p in peptides}
 
 
 def build_glycopeptides(
     peptides: set[str], glycans: set[tuple[str, float]]
 ) -> set[tuple[str, float]]:
-    def build(peptide: str, glycan: tuple[str, float]) -> tuple[str, float]:
+    def build(peptide: tuple[str, float], glycan: tuple[str, float]) -> tuple[str, float]:
+        peptide_name, peptide_mass = peptide
         glycan_name, glycan_mass = glycan
-        name = f"{glycan_name}-{peptide}"
+        name = f"{glycan_name}-{peptide_name}"
         # This is a condensation reaction, so remember to take away a water mass
-        mass = glycan_mass + peptide_mass(peptide) - WATER_MASS
+        mass = glycan_mass + peptide_mass - WATER_MASS
         return (name, mass)
 
     return {build(p, g) for p, g in itertools.product(peptides, glycans)}

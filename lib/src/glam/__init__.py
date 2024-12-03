@@ -30,7 +30,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     filter_glycopeptides,
-    peptide_mass,
+    peptide_masses,
     build_glycopeptides,
     convert_to_csv,
 )
@@ -84,6 +84,12 @@ A dictionary mapping common glycosylation types to regular expressions that
 describe the sequence motifs they target.
 """
 
+MODIFICATIONS: dict[str, tuple[list[str], float]] = {
+    "cm": (["C"], 57.021464),
+    "da": (["N"], 0.984016),
+}
+# FIXME: Write the docstring for this!
+
 # Functions ====================================================================
 
 
@@ -94,6 +100,7 @@ def generate_glycopeptides(
     digestion: str | Pattern[str],
     motif: str | Pattern[str],
     glycans: str,
+    modifications: dict[str, tuple[list[str], float]] = {},
     missed_cleavages: int = 0,
     min_length: int | None = None,
     max_length: int | None = None,
@@ -144,7 +151,7 @@ def generate_glycopeptides(
         glycopeptides = build_glycopeptides(motif_peptides, potential_glycans)
 
         if all_peptides:
-            glycopeptides |= {(p, peptide_mass(p)) for p in peptides}
+            glycopeptides |= peptide_masses(peptides)
 
         csv = convert_to_csv(glycopeptides)
         return (protein_name, csv)

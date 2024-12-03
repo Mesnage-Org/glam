@@ -170,37 +170,6 @@ wheels = [
 ]
 
 [[package]]
-name = "glam"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "glycowork" },
-    { name = "pyteomics" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "pdoc3" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "glycowork", specifier = ">=1.4.0" },
-    { name = "pyteomics", specifier = ">=4.7.5" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "mypy", specifier = ">=1.13.0" },
-    { name = "pdoc3", specifier = ">=0.11.1" },
-    { name = "pytest", specifier = ">=8.3.3" },
-    { name = "ruff", specifier = ">=0.7.3" },
-]
-
-[[package]]
 name = "glycowork"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -665,6 +634,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-regtest"
+version = "2.3.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/28/83/23371f36dba27820767ad3c2a97ecd27fbfff6d8d396a7d850694aa9c2c4/pytest_regtest-2.3.3.tar.gz", hash = "sha256:e294a8febd8821937cd2b62010d05b731af1b9f90692bc60690cb0307e38d9f1", size = 22222 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/a4/c3a0378806bddbf302cef7522c2f4e67e2bd3b57c4a6dcea700560c743f7/pytest_regtest-2.3.3-py3-none-any.whl", hash = "sha256:24cc93d457d62da154dd3d4f0fb23fb540f407dc588cfb853e923001235ea8e5", size = 17413 },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -876,6 +857,39 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/2a/55c5b5c5e5124a202ea3fe0bcdbdeceaf91b4ec6164b8434acb9dd97409c/statsmodels-0.14.4-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1322286a7bfdde2790bf72d29698a1b76c20b8423a55bdcd0d457969d0041f72", size = 10723228 },
     { url = "https://files.pythonhosted.org/packages/4f/76/67747e49dc758daae06f33aad8247b718cd7d224f091d2cd552681215bb2/statsmodels-0.14.4-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:e31b95ac603415887c9f0d344cb523889cf779bc52d68e27e2d23c358958fec7", size = 10859503 },
     { url = "https://files.pythonhosted.org/packages/1d/eb/cb8b01f5edf8f135eb3d0553d159db113a35b2948d0e51eeb735e7ae09ea/statsmodels-0.14.4-cp313-cp313-win_amd64.whl", hash = "sha256:81030108d27aecc7995cac05aa280cf8c6025f6a6119894eef648997936c2dd0", size = 9817574 },
+]
+
+[[package]]
+name = "theglam"
+version = "1.0.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "glycowork" },
+    { name = "pyteomics" },
+    { name = "pytest-regtest" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "pdoc3" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "glycowork", specifier = ">=1.4.0" },
+    { name = "pyteomics", specifier = ">=4.7.5" },
+    { name = "pytest-regtest", specifier = ">=2.3.3" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.13.0" },
+    { name = "pdoc3", specifier = ">=0.11.1" },
+    { name = "pytest", specifier = ">=8.3.3" },
+    { name = "ruff", specifier = ">=0.7.3" },
 ]
 
 [[package]]

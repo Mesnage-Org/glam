@@ -111,7 +111,11 @@ def convert_to_csv(glycopeptides: set[tuple[str, float]]) -> str:
     writer = csv.writer(csv_str)
     writer.writerow(["Structure", "Monoisotopicmass"])
 
-    for name, mass in sorted(glycopeptides):
+    sorted_glycopeptides = sorted(
+        (("-" in name, mass, name) for name, mass in glycopeptides), reverse=True
+    )
+
+    for _, mass, name in sorted_glycopeptides:
         mass = round(mass, 6)
         # NOTE: This is a nasty hack for PGFinder, which expects a `|1` type suffix
         # after the name of each structure. Really, that's a design flaw in PGFinder,

@@ -30,6 +30,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     filter_glycopeptides,
+    peptide_mass,
     build_glycopeptides,
     convert_to_csv,
 )
@@ -97,6 +98,8 @@ def generate_glycopeptides(
     min_length: int | None = None,
     max_length: int | None = None,
     semi_enzymatic: bool = False,
+    all_peptides: bool = False,
+    **kwargs,
 ) -> list[tuple[str, str]]:
     """Generates glycopeptides from an input FASTA and CSV file of glycans.
 
@@ -139,6 +142,9 @@ def generate_glycopeptides(
         )
         motif_peptides = filter_glycopeptides(peptides, motif)
         glycopeptides = build_glycopeptides(motif_peptides, potential_glycans)
+
+        if all_peptides:
+            glycopeptides |= {(p, peptide_mass(p)) for p in peptides}
 
         csv = convert_to_csv(glycopeptides)
         return (protein_name, csv)

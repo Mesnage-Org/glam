@@ -29,6 +29,7 @@ import pyteomics.fasta
 from glam._lib import (
     load_glycans,
     digest_protein,
+    modify_peptides,
     filter_glycopeptides,
     peptide_masses,
     build_glycopeptides,
@@ -101,6 +102,7 @@ def generate_glycopeptides(
     motif: str | Pattern[str],
     glycans: str,
     modifications: dict[str, tuple[list[str], float]] = {},
+    max_modifications: int | None = None,
     missed_cleavages: int = 0,
     min_length: int | None = None,
     max_length: int | None = None,
@@ -141,19 +143,21 @@ def generate_glycopeptides(
     potential_glycans = load_glycans(glycans)
 
     def generate(protein: Protein) -> tuple[str, str]:
-        protein_name = f"{protein.description}.csv"
+        filename = f"{protein.description}.csv"
         seq = protein.sequence
 
         peptides = digest_protein(
             seq, digestion, missed_cleavages, min_length, max_length, semi_enzymatic
         )
-        motif_peptides = filter_glycopeptides(peptides, motif)
-        glycopeptides = build_glycopeptides(motif_peptides, potential_glycans)
+        modified_peptides = modify_peptides(peptides, modifications, max_modifications)
+        motif_peptides = filter_glycopeptides(modified_peptides, motif)
+        motif_peptide_masses = peptide_masses(motif_peptides, modifications)
+        glycopeptides = build_glycopeptides(motif_peptide_masses, potential_glycans)
 
         if all_peptides:
-            glycopeptides |= peptide_masses(peptides)
+            glycopeptides |= peptide_masses(modified_peptides, modifications)
 
         csv = convert_to_csv(glycopeptides)
-        return (protein_name, csv)
+        return (filename, csv)
 
     return [generate(protein) for protein in proteins]

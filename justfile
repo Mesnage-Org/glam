@@ -6,7 +6,7 @@ watch-py:
 test-py:
     cd lib && uv run pytest
 
-approve-tests-py:
+regtest-approve-py:
     cd lib && uv run pytest --regtest-reset
 
 check-py:

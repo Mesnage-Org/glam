@@ -78,14 +78,30 @@ def digest_protein(
     )
 
 
+def modify_peptides(
+    peptides: set[str],
+    mods: dict[str, tuple[list[str], float]],
+    max_mods: int | None = None,
+) -> set[str]:
+    variable_mods = {n: ts for n, (ts, _) in mods.items()}
+    return {
+        isoform
+        for peptide in peptides
+        for isoform in pyteomics.parser.isoforms(peptide, variable_mods=variable_mods)
+    }
+
+
 def filter_glycopeptides(
     peptides: set[str], glycosylation_motif: str | Pattern[str]
 ) -> set[str]:
     return {p for p in peptides if re.search(glycosylation_motif, p)}
 
 
-def peptide_masses(peptides: set[str], mod_masses: dict[str, float] = {}) -> set[tuple[str, float]]:
+def peptide_masses(
+    peptides: set[str], mods: dict[str, tuple[list[str], float]] = {}
+) -> set[tuple[str, float]]:
     def mass(peptide: str) -> float:
+        mod_masses = {n: m for n, (_, m) in mods.items()}
         aa_mass = pyteomics.mass.std_aa_mass | mod_masses
         try:
             return pyteomics.mass.fast_mass2(peptide, aa_mass=aa_mass)
@@ -98,9 +114,11 @@ def peptide_masses(peptides: set[str], mod_masses: dict[str, float] = {}) -> set
 
 
 def build_glycopeptides(
-    peptides: set[str], glycans: set[tuple[str, float]]
+    peptides: set[tuple[str, float]], glycans: set[tuple[str, float]]
 ) -> set[tuple[str, float]]:
-    def build(peptide: tuple[str, float], glycan: tuple[str, float]) -> tuple[str, float]:
+    def build(
+        peptide: tuple[str, float], glycan: tuple[str, float]
+    ) -> tuple[str, float]:
         peptide_name, peptide_mass = peptide
         glycan_name, glycan_mass = glycan
         name = f"{glycan_name}-{peptide_name}"

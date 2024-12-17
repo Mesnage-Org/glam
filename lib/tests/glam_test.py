@@ -1,5 +1,5 @@
 from pathlib import Path
-from glam import DIGESTIONS, GLYCOSYLATION_MOTIFS, generate_glycopeptides
+from glam import DIGESTIONS, GLYCOSYLATION_MOTIFS, MODIFICATIONS, generate_glycopeptides
 
 # Test Data  ===================================================================
 
@@ -22,6 +22,29 @@ def test_all_peptides(regtest) -> None:
         DIGESTIONS["Trypsin"],
         GLYCOSYLATION_MOTIFS["N"],
         CHLAMY_GLYCANS,
+        all_peptides=True,
+    )
+    regtest.write(glycopeptides[0][1])
+
+
+def test_modifications(regtest) -> None:
+    glycopeptides = generate_glycopeptides(
+        SPIKE_PROTEIN,
+        DIGESTIONS["Trypsin"],
+        GLYCOSYLATION_MOTIFS["N"],
+        CHLAMY_GLYCANS,
+        MODIFICATIONS,
+    )
+    regtest.write(glycopeptides[0][1])
+
+
+def test_modifications_all_peptides(regtest) -> None:
+    glycopeptides = generate_glycopeptides(
+        SPIKE_PROTEIN,
+        DIGESTIONS["Trypsin"],
+        GLYCOSYLATION_MOTIFS["N"],
+        CHLAMY_GLYCANS,
+        MODIFICATIONS,
         all_peptides=True,
     )
     regtest.write(glycopeptides[0][1])

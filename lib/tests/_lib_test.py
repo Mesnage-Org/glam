@@ -8,11 +8,13 @@ from pyteomics import fasta
 import pytest
 
 # Local Modules
-from glam import DIGESTIONS, GLYCOSYLATION_MOTIFS
+from glam import DIGESTIONS, GLYCOSYLATION_MOTIFS, MODIFICATIONS
 from glam._lib import (
+    WATER_MASS,
     glycan_mass,
     load_glycans,
     digest_protein,
+    modify_peptides,
     filter_glycopeptides,
     peptide_masses,
     build_glycopeptides,
@@ -100,6 +102,19 @@ def test_digest_protein() -> None:
     assert tryptic_peptides == TRYPTIC_PEPTIDES
 
 
+def test_modify_peptides() -> None:
+    peptides = {"CARNAGE", "CATS"}
+    modified_peptides = {
+        "CARNAGE",
+        "cmCARNAGE",
+        "CARdaNAGE",
+        "cmCARdaNAGE",
+        "CATS",
+        "cmCATS",
+    }
+    assert modify_peptides(peptides, MODIFICATIONS) == modified_peptides
+
+
 def test_filter_glycopeptides() -> None:
     tryptic_peptides = digest_protein(
         SPIKE_PROTEIN, DIGESTIONS["Trypsin"], 0, None, None, False
@@ -109,32 +124,44 @@ def test_filter_glycopeptides() -> None:
     assert glycopeptides == GLYCOPEPTIDES
 
 
-def test_peptide_mass() -> None:
+def test_peptide_masses() -> None:
     masses = peptide_masses({"PEPTIDE", "TIME"})
-    assert masses == {("PEPTIDE", 799.3599640267099), ("TIME", 799.3599640267099)}
+    assert masses == {("PEPTIDE", 799.3599640267099), ("TIME", 492.2253851302)}
 
 
-def test_peptide_mass_raises() -> None:
+def test_modified_peptide_masses() -> None:
+    masses = peptide_masses({"PcmEPTIdaDE"}, mods=MODIFICATIONS)
+    assert masses == {("PcmEPTIdaDE", 799.3599640267099 + 57.021464 + 0.984016)}
+
+
+def test_peptide_masses_raises() -> None:
     with pytest.raises(ValueError) as e:
         peptide_masses({"PEPTIXE"})
-    assert (
-        str(e.value)
-        == "Unknown amino acid residue found in 'PEPTIXE': No mass data for residue: X"
+    assert str(e.value) == (
+        "Unknown amino acid residue found in 'PEPTIXE': "
+        "Mass not specified for label(s): X"
     )
 
 
 def test_build_glycopeptides() -> None:
-    peptides = {"PEP", "TIDE"}
+    peptides = {("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)}
     glycans = {("A", 1.0), ("AB", 20.0), ("ABC", 300.0)}
     glycopeptides = {
-        ("A-PEP", 324.14813086937005),
-        ("AB-PEP", 343.14813086937005),
-        ("ABC-PEP", 623.1481308693701),
-        ("A-TIDE", 459.20128864104004),
-        ("AB-TIDE", 478.20128864104004),
-        ("ABC-TIDE", 758.20128864104),
+        ("A-PEP", 1.2),
+        ("AB-PEP", 20.2),
+        ("ABC-PEP", 300.2),
+        ("A-TIDE", 1.1),
+        ("AB-TIDE", 20.1),
+        ("ABC-TIDE", 300.1),
     }
-    assert build_glycopeptides(peptides, glycans) == glycopeptides
+    # NOTE: Probably shouldn't be using `float`s for any of these calculations... The
+    # floating-point error means that we end up with things like `1.1000000000000014`
+    # instead of `1.1`... Look into replacing all of the `float`s with `Decimal`? For
+    # now, we'll just round the masses returned from `build_glycopeptides`...
+    rounded_glycopeptides = {
+        (n, round(m, ndigits=1)) for n, m in build_glycopeptides(peptides, glycans)
+    }
+    assert rounded_glycopeptides == glycopeptides
 
 
 def test_convert_to_csv() -> None:

@@ -1,10 +1,13 @@
 export PYTHONWARNINGS := "ignore::DeprecationWarning:glycowork"
 
 watch-py:
-    watchexec -e py,pyi,toml just test-py check-py fmt-py
+    watchexec -e py,pyi,toml just test-py check-py
 
 test-py:
     cd lib && uv run pytest
+
+regtest-approve-py:
+    cd lib && uv run pytest --regtest-reset
 
 check-py:
     cd lib && uv run mypy .

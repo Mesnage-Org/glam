@@ -5,7 +5,7 @@ description = "The Glycopeptide Analysis Module"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "glycowork>=1.4.0",
+    "glycowork",
     "pyteomics>=4.7.5",
 ]
 
@@ -23,3 +23,6 @@ mypy_path = "stubs"
 
 [tool.pytest.ini_options]
 pythonpath = "src"
+
+[tool.uv.sources]
+glycowork = { git = "https://github.com/TheLostLambda/glycowork" }

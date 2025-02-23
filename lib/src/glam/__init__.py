@@ -19,7 +19,7 @@ print("Test?")
 
 # Standard Library
 from io import StringIO
-from typing import Pattern
+from typing import Iterable, Pattern
 
 # Dependencies
 from pyteomics.fasta import Protein
@@ -29,7 +29,9 @@ import pyteomics.fasta
 from glam._lib import (
     load_glycans,
     digest_protein,
+    modify_peptides,
     filter_glycopeptides,
+    peptide_masses,
     build_glycopeptides,
     convert_to_csv,
 )
@@ -83,6 +85,14 @@ A dictionary mapping common glycosylation types to regular expressions that
 describe the sequence motifs they target.
 """
 
+MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
+    "Methionine Oxidation": ("ox", ["M"], 15.994915),
+    "Carbamidomethyl": ("cm", ["C"], 57.021464),
+    "N-Deamidation": ("da", ["N"], 0.984016),
+}
+# FIXME: Write the docstring for this!
+# FIXME: Ask Caroline what to call these?
+
 # Functions ====================================================================
 
 
@@ -93,10 +103,14 @@ def generate_glycopeptides(
     digestion: str | Pattern[str],
     motif: str | Pattern[str],
     glycans: str,
+    modifications: Iterable[tuple[str, list[str], float]] = [],
+    max_modifications: int | None = None,
     missed_cleavages: int = 0,
     min_length: int | None = None,
     max_length: int | None = None,
     semi_enzymatic: bool = False,
+    all_peptides: bool = False,
+    **kwargs,
 ) -> list[tuple[str, str]]:
     """Generates glycopeptides from an input FASTA and CSV file of glycans.
 
@@ -131,16 +145,21 @@ def generate_glycopeptides(
     potential_glycans = load_glycans(glycans)
 
     def generate(protein: Protein) -> tuple[str, str]:
-        protein_name = f"{protein.description}.csv"
+        filename = f"{protein.description}.csv"
         seq = protein.sequence
 
         peptides = digest_protein(
             seq, digestion, missed_cleavages, min_length, max_length, semi_enzymatic
         )
-        motif_peptides = filter_glycopeptides(peptides, motif)
-        glycopeptides = build_glycopeptides(motif_peptides, potential_glycans)
+        modified_peptides = modify_peptides(peptides, modifications, max_modifications)
+        motif_peptides = filter_glycopeptides(modified_peptides, motif)
+        motif_peptide_masses = peptide_masses(motif_peptides, modifications)
+        glycopeptides = build_glycopeptides(motif_peptide_masses, potential_glycans)
+
+        if all_peptides:
+            glycopeptides |= peptide_masses(modified_peptides, modifications)
 
         csv = convert_to_csv(glycopeptides)
-        return (protein_name, csv)
+        return (filename, csv)
 
     return [generate(protein) for protein in proteins]

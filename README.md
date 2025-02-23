@@ -25,9 +25,11 @@ list
 ```
 
 # Related Work
-https://github.com/SugarPy/SugarPy
-https://github.com/ursgal/ursgal
-https://github.com/pyQms/pyqms
+
+- [SugarPy](https://github.com/SugarPy/SugarPy)
+- [ursgal](https://github.com/ursgal/ursgal)
+- [pyqms](https://github.com/pyQms/pyqms)
+  
 
 # Findings
 The MeHex mass was wrong, so structures with more MeHex were more incorrect in their masses.

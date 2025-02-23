@@ -2,7 +2,7 @@
 
 # Standard Library
 from io import StringIO
-from typing import Pattern
+from typing import Iterable, Pattern
 import csv
 import itertools
 import re
@@ -80,10 +80,10 @@ def digest_protein(
 
 def modify_peptides(
     peptides: set[str],
-    mods: dict[str, tuple[list[str], float]],
+    mods: Iterable[tuple[str, list[str], float]],
     max_mods: int | None = None,
 ) -> set[str]:
-    variable_mods = {n: ts for n, (ts, _) in mods.items()}
+    variable_mods = {n: ts for (n, ts, _) in mods}
     return {
         isoform
         for peptide in peptides
@@ -98,10 +98,10 @@ def filter_glycopeptides(
 
 
 def peptide_masses(
-    peptides: set[str], mods: dict[str, tuple[list[str], float]] = {}
+    peptides: set[str], mods: Iterable[tuple[str, list[str], float]] = []
 ) -> set[tuple[str, float]]:
     def mass(peptide: str) -> float:
-        mod_masses = {n: m for n, (_, m) in mods.items()}
+        mod_masses = {n: m for (n, _, m) in mods}
         aa_mass = pyteomics.mass.std_aa_mass | mod_masses
         try:
             return pyteomics.mass.fast_mass2(peptide, aa_mass=aa_mass)
@@ -132,7 +132,7 @@ def build_glycopeptides(
 def convert_to_csv(glycopeptides: set[tuple[str, float]]) -> str:
     csv_str = StringIO()
     writer = csv.writer(csv_str)
-    writer.writerow(["Structure", "Monoisotopicmass"])
+    writer.writerow(["Structure", "Monoisotopic Mass"])
 
     sorted_glycopeptides = sorted(
         (("-" in name, mass, name) for name, mass in glycopeptides), reverse=True

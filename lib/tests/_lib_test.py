@@ -112,7 +112,7 @@ def test_modify_peptides() -> None:
         "CATS",
         "cmCATS",
     }
-    assert modify_peptides(peptides, MODIFICATIONS) == modified_peptides
+    assert modify_peptides(peptides, MODIFICATIONS.values()) == modified_peptides
 
 
 def test_filter_glycopeptides() -> None:
@@ -130,7 +130,7 @@ def test_peptide_masses() -> None:
 
 
 def test_modified_peptide_masses() -> None:
-    masses = peptide_masses({"PcmEPTIdaDE"}, mods=MODIFICATIONS)
+    masses = peptide_masses({"PcmEPTIdaDE"}, mods=MODIFICATIONS.values())
     assert masses == {("PcmEPTIdaDE", 799.3599640267099 + 57.021464 + 0.984016)}
 
 

@@ -19,7 +19,7 @@ print("Test?")
 
 # Standard Library
 from io import StringIO
-from typing import Pattern
+from typing import Iterable, Pattern
 
 # Dependencies
 from pyteomics.fasta import Protein
@@ -85,9 +85,10 @@ A dictionary mapping common glycosylation types to regular expressions that
 describe the sequence motifs they target.
 """
 
-MODIFICATIONS: dict[str, tuple[list[str], float]] = {
-    "cm": (["C"], 57.021464),
-    "da": (["N"], 0.984016),
+MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
+    "Methionine Oxidation": ("ox", ["M"], 15.994915),
+    "Carbamidomethyl": ("cm", ["C"], 57.021464),
+    "N-Deamidation": ("da", ["N"], 0.984016),
 }
 # FIXME: Write the docstring for this!
 # FIXME: Ask Caroline what to call these?
@@ -102,7 +103,7 @@ def generate_glycopeptides(
     digestion: str | Pattern[str],
     motif: str | Pattern[str],
     glycans: str,
-    modifications: dict[str, tuple[list[str], float]] = {},
+    modifications: Iterable[tuple[str, list[str], float]] = [],
     max_modifications: int | None = None,
     missed_cleavages: int = 0,
     min_length: int | None = None,

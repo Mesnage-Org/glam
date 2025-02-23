@@ -33,7 +33,7 @@ def test_modifications(regtest) -> None:
         DIGESTIONS["Trypsin"],
         GLYCOSYLATION_MOTIFS["N"],
         CHLAMY_GLYCANS,
-        MODIFICATIONS,
+        MODIFICATIONS.values(),
     )
     regtest.write(glycopeptides[0][1])
 
@@ -44,7 +44,7 @@ def test_modifications_all_peptides(regtest) -> None:
         DIGESTIONS["Trypsin"],
         GLYCOSYLATION_MOTIFS["N"],
         CHLAMY_GLYCANS,
-        MODIFICATIONS,
+        MODIFICATIONS.values(),
         all_peptides=True,
     )
     regtest.write(glycopeptides[0][1])

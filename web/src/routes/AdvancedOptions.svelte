@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { children } = $props();
+	let { children } = $props();
 
 	// External Components
 	import { Accordion } from '@skeletonlabs/skeleton-svelte';
@@ -13,7 +13,7 @@
 		{#snippet lead()}<Settings2 size={24} />{/snippet}
 		{#snippet control()}Advanced Options{/snippet}
 		{#snippet panel()}
-		  {@render children()}
-    {/snippet}
+			{@render children()}
+		{/snippet}
 	</Accordion.Item>
 </Accordion>

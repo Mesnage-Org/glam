@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { steps } = $props();
+	let { steps } = $props();
 
 	// Icons
 	import { ArrowLeft, ArrowRight, Download } from 'lucide-svelte';
@@ -48,7 +48,7 @@
 				{/each}
 			</div>
 			<!-- Line -->
-			<hr class="hr absolute left-0 right-0 top-[50%] z-[-1] !border-surface-200-800" />
+			<hr class="hr !border-surface-200-800 absolute top-[50%] right-0 left-0 z-[-1]" />
 		</div>
 		<!-- Loop all steps -->
 		{#each steps as step, i (step)}
@@ -78,7 +78,11 @@
 					<ArrowRight size={18} />
 				</button>
 			{:else}
-				<button type="button" class="btn preset-tonal-secondary hover:preset-filled-secondary" onclick={() => console.log("Done!")}>
+				<button
+					type="button"
+					class="btn preset-tonal-secondary hover:preset-filled-secondary"
+					onclick={() => console.log('Done!')}
+				>
 					<span>Run Analysis</span>
 					<Download size={18} />
 				</button>

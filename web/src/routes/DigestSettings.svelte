@@ -21,7 +21,7 @@
 
 <form class="mx-auto flex w-full max-w-md flex-col items-center gap-4">
 	<select
-		class="select overflow-y-auto rounded-container"
+		class="select rounded-container overflow-y-auto"
 		multiple
 		bind:value={selectedDigests}
 		onchange={selectionUpdated}
@@ -37,7 +37,7 @@
 	<AdvancedOptions>
 		<label class="label flex items-center gap-4">
 			<span class="text-nowrap">Missed Cleavages</span>
-			<input class="input" type="number" min="0" bind:value={digestSettings.missedCleavages}/>
+			<input class="input" type="number" min="0" bind:value={digestSettings.missedCleavages} />
 		</label>
 	</AdvancedOptions>
 </form>

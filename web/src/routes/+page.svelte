@@ -1,8 +1,7 @@
 <script lang="ts">
-  import Glam from "./Glam.svelte"
+	import Glam from './Glam.svelte';
 </script>
 
-<main class="h-screen flex items-center justify-center">
-  <Glam />
+<main class="flex h-screen items-center justify-center">
+	<Glam />
 </main>
-

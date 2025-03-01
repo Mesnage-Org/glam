@@ -83,7 +83,7 @@
 </script>
 
 <article
-	class="w-max-[80%] card w-96 border-2 p-4 text-center border-surface-200-800 preset-filled-surface-100-900"
+	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 w-96 border-2 p-4 text-center"
 >
 	<!--
 	<div class="flex flex-col lg:flex-row gap-4">

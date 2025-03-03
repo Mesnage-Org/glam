@@ -1,8 +1,15 @@
 <script lang="ts">
+	// FIXME: Remove `onChange`
 	let { onChange, digestions } = $props();
+
+	// External Components
+	import { ProgressRing } from '@skeletonlabs/skeleton-svelte';
 
 	// Internal Components
 	import AdvancedOptions from './AdvancedOptions.svelte';
+	import MissedCleavages from './DigestSettings/MissedCleavages.svelte';
+	import PeptideLength from './DigestSettings/PeptideLength.svelte';
+	import SemiSpecific from './DigestSettings/SemiSpecific.svelte';
 
 	let selectedDigests = $state([]);
 	class DigestSettings {
@@ -13,31 +20,16 @@
 		semiEnzymatic: boolean = $state(false);
 	}
 	let digestSettings = new DigestSettings();
-
-	function selectionUpdated() {
-		onChange(digestSettings.regex);
-	}
 </script>
 
 <form class="mx-auto flex w-full max-w-md flex-col items-center gap-4">
-	<select
-		class="select rounded-container overflow-y-auto"
-		multiple
-		bind:value={selectedDigests}
-		onchange={selectionUpdated}
-	>
-		{#if digestions() === undefined}
-			<option>:(</option>
-		{:else}
-			{#each Object.keys(digestions()) as name}
-				<option value={name}>{name}</option>
-			{/each}
-		{/if}
-	</select>
 	<AdvancedOptions>
-		<label class="label flex items-center gap-4">
-			<span class="text-nowrap">Missed Cleavages</span>
-			<input class="input" type="number" min="0" bind:value={digestSettings.missedCleavages} />
-		</label>
+		<MissedCleavages bind:value={digestSettings.missedCleavages} />
+		<hr class="border-surface-200-800" />
+		<PeptideLength type="Minimum" bind:value={digestSettings.minLength} />
+		<hr class="border-surface-200-800" />
+		<PeptideLength type="Maximum" bind:value={digestSettings.maxLength} />
+		<hr class="border-surface-200-800" />
+		<SemiSpecific bind:value={digestSettings.semiEnzymatic} />
 	</AdvancedOptions>
 </form>

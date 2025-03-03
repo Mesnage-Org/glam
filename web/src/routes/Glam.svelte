@@ -1,11 +1,6 @@
 <script lang="ts">
-	import { FileUpload } from '@skeletonlabs/skeleton-svelte';
 	import { onMount } from 'svelte';
 	import Glam from '$lib/glam.ts?worker';
-	// Icons
-	import IconDropzone from 'lucide-svelte/icons/image-plus';
-	import IconFile from 'lucide-svelte/icons/paperclip';
-	import IconRemove from 'lucide-svelte/icons/circle-x';
 	import fileDownload from 'js-file-download';
 
 	// Internal Components
@@ -18,8 +13,6 @@
 	let digestions = $state();
 	let digestRegex = $state('');
 	let csv: string | undefined = $state();
-
-	$effect(() => console.log(digestRegex));
 
 	let digest_settings = $state({
 		missed_cleavages: 0,
@@ -85,26 +78,5 @@
 <article
 	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 w-96 border-2 p-4 text-center"
 >
-	<!--
-	<div class="flex flex-col lg:flex-row gap-4">
-		<FileDropzone
-			bind:text={fasta}
-			title="1) Upload Protein"
-			subtext="Upload a protein-containing FASTA file"
-			accept={{ 'text/x-fasta': ['.fasta', '.fas', '.fa', '.faa', '.mpfa'] }}
-		/>
-
-		<DigestSettings bind:digestRegex {digestions} />
-
-		<FileDropzone
-			bind:text={csv}
-			title="4) Upload Glycans"
-			subtext="Upload a glycan database file (.csv)"
-			accept="text/csv"
-		/>
-	</div>
-
-	<button type="button" class="btn mt-2 preset-filled" onclick={runGlam}>Go!</button>
-	-->
 	<Stepper {steps} />
 </article>

@@ -27,7 +27,7 @@
 	}
 </script>
 
-<form class="grid w-full grid-cols-[1fr_1fr_1fr_auto] gap-2">
+<div class="grid w-full grid-cols-[1fr_1fr_1fr_auto] gap-2">
 	{#if joinedModifications.length !== 0}
 		<label class="label label-text" for="abbr">Abbreviation</label>
 		<label class="label label-text" for="targets">Target Residues</label>
@@ -54,4 +54,4 @@
 			onchange();
 		}}><CirclePlus /></button
 	>
-</form>
+</div>

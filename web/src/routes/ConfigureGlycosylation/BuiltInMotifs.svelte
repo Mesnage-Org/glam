@@ -15,14 +15,14 @@
 </script>
 
 {#if initData.glycosylationMotifs === undefined}
-	<option class="flex justify-center">
+	<div class="flex justify-center">
 		<ProgressRing
 			value={null}
 			size="size-14"
 			meterStroke="stroke-tertiary-600-400"
 			trackStroke="stroke-tertiary-50-950"
 		/>
-	</option>
+	</div>
 {:else}
 	<select class="select rounded-container overflow-y-auto" multiple bind:value {onchange}>
 		{#each initData.glycosylationMotifs.keys() as name}

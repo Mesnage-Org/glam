@@ -52,12 +52,10 @@
 		</div>
 		<!-- Loop all steps -->
 		{#each steps as step, i (step)}
-			{#if isCurrentStep(i)}
-				<div class="flex flex-col gap-4">
-					<h4 class="h4">{step.title}</h4>
-					<step.component {...step.props} />
-				</div>
-			{/if}
+			<div class={['flex flex-col gap-4', !isCurrentStep(i) && 'hidden']}>
+				<h4 class="h4">{step.title}</h4>
+				<step.component {...step.props} />
+			</div>
 		{/each}
 		<!-- Navigation -->
 		<nav class="flex items-center justify-between gap-4">

@@ -4,6 +4,8 @@
 	import { InitData, Parameters, setInitData, setParameters } from '$lib/state.svelte';
 	import fileDownload from 'js-file-download';
 
+	import { Progress } from '@skeletonlabs/skeleton-svelte';
+
 	// Internal Components
 	import FileDropzone from './FileDropzone.svelte';
 	import ConfigureDigests from './ConfigureDigests.svelte';
@@ -30,12 +32,12 @@
 					for (const key of Object.keys(msg.initData)) {
 						initData[key] = new Map(Object.entries(msg.initData[key]));
 					}
-					glamBusy = false;
 					break;
 				case 'Result':
 					fileDownload(msg.blob, msg.filename);
 					break;
 			}
+			glamBusy = false;
 		};
 	});
 
@@ -61,6 +63,7 @@
 
 	function onFinish() {
 		glam.postMessage(JSON.stringify(parameters));
+		glamBusy = true;
 	}
 
 	// Step Components
@@ -89,7 +92,10 @@
 </script>
 
 <article
-	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 w-96 border-2 p-4 text-center"
+	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 flex w-96 flex-col gap-4 border-2 p-4 text-center"
 >
 	<Stepper {steps} {isReady} {onFinish} />
+	{#if glamBusy}
+		<Progress value={null} />
+	{/if}
 </article>

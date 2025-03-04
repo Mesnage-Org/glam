@@ -2,7 +2,7 @@
 
 # Standard Library
 from io import StringIO
-from typing import Pattern
+from typing import Iterable, Pattern
 import csv
 import itertools
 import re
@@ -78,29 +78,52 @@ def digest_protein(
     )
 
 
+def modify_peptides(
+    peptides: set[str],
+    mods: Iterable[tuple[str, list[str], float]],
+    max_mods: int | None = None,
+) -> set[str]:
+    variable_mods = {n: ts for (n, ts, _) in mods}
+    return {
+        isoform
+        for peptide in peptides
+        for isoform in pyteomics.parser.isoforms(peptide, variable_mods=variable_mods)
+    }
+
+
 def filter_glycopeptides(
     peptides: set[str], glycosylation_motif: str | Pattern[str]
 ) -> set[str]:
     return {p for p in peptides if re.search(glycosylation_motif, p)}
 
 
-def peptide_mass(peptide: str) -> float:
-    try:
-        return pyteomics.mass.fast_mass(peptide)
-    except PyteomicsError as e:
-        raise ValueError(
-            f"Unknown amino acid residue found in '{peptide}': {e.message}"
-        )
+def peptide_masses(
+    peptides: set[str], mods: Iterable[tuple[str, list[str], float]] = []
+) -> set[tuple[str, float]]:
+    def mass(peptide: str) -> float:
+        mod_masses = {n: m for (n, _, m) in mods}
+        aa_mass = pyteomics.mass.std_aa_mass | mod_masses
+        try:
+            return pyteomics.mass.fast_mass2(peptide, aa_mass=aa_mass)
+        except PyteomicsError as e:
+            raise ValueError(
+                f"Unknown amino acid residue found in '{peptide}': {e.message}"
+            )
+
+    return {(p, mass(p)) for p in peptides}
 
 
 def build_glycopeptides(
-    peptides: set[str], glycans: set[tuple[str, float]]
+    peptides: set[tuple[str, float]], glycans: set[tuple[str, float]]
 ) -> set[tuple[str, float]]:
-    def build(peptide: str, glycan: tuple[str, float]) -> tuple[str, float]:
+    def build(
+        peptide: tuple[str, float], glycan: tuple[str, float]
+    ) -> tuple[str, float]:
+        peptide_name, peptide_mass = peptide
         glycan_name, glycan_mass = glycan
-        name = f"{glycan_name}-{peptide}"
+        name = f"{glycan_name}-{peptide_name}"
         # This is a condensation reaction, so remember to take away a water mass
-        mass = glycan_mass + peptide_mass(peptide) - WATER_MASS
+        mass = glycan_mass + peptide_mass - WATER_MASS
         return (name, mass)
 
     return {build(p, g) for p, g in itertools.product(peptides, glycans)}
@@ -109,9 +132,13 @@ def build_glycopeptides(
 def convert_to_csv(glycopeptides: set[tuple[str, float]]) -> str:
     csv_str = StringIO()
     writer = csv.writer(csv_str)
-    writer.writerow(["Structure", "Monoisotopicmass"])
+    writer.writerow(["Structure", "Monoisotopic Mass"])
 
-    for name, mass in sorted(glycopeptides):
+    sorted_glycopeptides = sorted(
+        (("-" in name, mass, name) for name, mass in glycopeptides), reverse=True
+    )
+
+    for _, mass, name in sorted_glycopeptides:
         mass = round(mass, 6)
         # NOTE: This is a nasty hack for PGFinder, which expects a `|1` type suffix
         # after the name of each structure. Really, that's a design flaw in PGFinder,

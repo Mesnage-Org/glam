@@ -1,35 +1,36 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Glam from '$lib/glam.ts?worker';
+	import { InitData, Parameters, setInitData, setParameters } from '$lib/state.svelte';
 	import fileDownload from 'js-file-download';
 
 	// Internal Components
 	import FileDropzone from './FileDropzone.svelte';
-	import DigestSettings from './DigestSettings.svelte';
+	import ConfigureDigests from './ConfigureDigests.svelte';
+	import ConfigureGlycosylation from './ConfigureGlycosylation.svelte';
+	import ConfigureModifications from './ConfigureModifications.svelte';
 	import Stepper from './Stepper.svelte';
+	import UploadProtein from './UploadProtein.svelte';
+	import UploadGlycans from './UploadGlycans.svelte';
 
-	let fasta: string | undefined = $state();
-	// FIXME: Move this to some object with the glycan sites and modifications
-	let digestions = $state();
-	let digestRegex = $state('');
-	let csv: string | undefined = $state();
+	let initData: InitData = new InitData();
+	let parameters: Parameters = new Parameters();
 
-	let digest_settings = $state({
-		missed_cleavages: 0,
-		min_length: null,
-		max_length: null,
-		semi_enzymatic: false
-	});
+	setInitData(initData);
+	setParameters(parameters);
 
 	let glam: Worker;
+	let glamBusy = $state(true);
 
 	onMount(() => {
 		glam = new Glam();
 		glam.onmessage = ({ data: msg }) => {
-			console.log(msg);
 			switch (msg.type) {
 				case 'Ready':
-					digestions = msg.digestions;
+					for (const key of Object.keys(msg.initData)) {
+						initData[key] = new Map(Object.entries(msg.initData[key]));
+					}
+					glamBusy = false;
 					break;
 				case 'Result':
 					fileDownload(msg.blob, msg.filename);
@@ -38,39 +39,51 @@
 		};
 	});
 
-	function runGlam() {
-		glam.postMessage({
-			fasta,
-			digestRegex,
-			csv,
-			missed_cleavages: digest_settings.missed_cleavages
-		});
+	$inspect(initData.digestions, initData.glycosylationMotifs, initData.modifications);
+
+	$inspect(
+		parameters.proteinFasta,
+		parameters.digestSettings.regex,
+		parameters.digestSettings.missedCleavages,
+		parameters.digestSettings.minLength,
+		parameters.digestSettings.maxLength,
+		parameters.digestSettings.semiEnzymatic,
+		parameters.glycanCsv,
+		parameters.glycosylationSettings.regex,
+		parameters.glycosylationSettings.allPeptides,
+		parameters.modificationSettings.modifications,
+		parameters.modificationSettings.maxModifications
+	);
+
+	let isReady = $derived(
+		parameters.proteinFasta !== undefined && parameters.glycanCsv !== undefined && !glamBusy
+	);
+
+	function onFinish() {
+		glam.postMessage(JSON.stringify(parameters));
 	}
 
 	// Step Components
 	const steps = [
 		{
 			title: 'Upload Protein',
-			component: FileDropzone,
-			props: {
-				onFileAccept: (text: string) => (fasta = text),
-				subtext: 'Upload a protein-containing FASTA file',
-				accept: { 'text/x-fasta': ['.fasta', '.fas', '.fa', '.faa', '.mpfa'] }
-			}
+			component: UploadProtein
 		},
 		{
 			title: 'Specify Digests',
-			component: DigestSettings,
-			props: { onChange: (regex: string) => console.log(regex), digestions: () => digestions }
+			component: ConfigureDigests
 		},
 		{
 			title: 'Upload Glycans',
-			component: FileDropzone,
-			props: {
-				onFileAccept: (text: string) => (csv = text),
-				subtext: 'Upload a glycan database file (.csv)',
-				accept: 'text/csv'
-			}
+			component: UploadGlycans
+		},
+		{
+			title: 'Specify Glycosylation Motifs',
+			component: ConfigureGlycosylation
+		},
+		{
+			title: 'Specify Modifications',
+			component: ConfigureModifications
 		}
 	];
 </script>
@@ -78,5 +91,5 @@
 <article
 	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 w-96 border-2 p-4 text-center"
 >
-	<Stepper {steps} />
+	<Stepper {steps} {isReady} {onFinish} />
 </article>

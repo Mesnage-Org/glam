@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { steps } = $props();
+	let { steps, isReady, onFinish } = $props();
 
 	// Icons
 	import { ArrowLeft, ArrowRight, Download } from 'lucide-svelte';
@@ -80,8 +80,9 @@
 			{:else}
 				<button
 					type="button"
-					class="btn preset-tonal-secondary hover:preset-filled-secondary"
-					onclick={() => console.log('Done!')}
+					class={['btn preset-tonal-success', isReady && 'hover:preset-filled-success-700-300']}
+					onclick={onFinish}
+					disabled={!isReady}
 				>
 					<span>Run Analysis</span>
 					<Download size={18} />

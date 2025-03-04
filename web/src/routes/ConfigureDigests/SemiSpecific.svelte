@@ -6,5 +6,5 @@
 
 <label class="label flex items-center justify-between">
 	<span class="text-nowrap">Semi-Specific Cleavage</span>
-	<Switch checked={value} onCheckedChange={(e) => value = e.checked} />
+	<Switch checked={value} onCheckedChange={(e) => (value = e.checked)} />
 </label>

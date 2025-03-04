@@ -2,21 +2,45 @@ import { loadPyodide } from 'pyodide';
 
 // FIXME: Any type...
 function convert(proxy: any) {
-	let val = proxy.toJs();
+	let val = proxy.toJs({ dict_converter: Object.fromEntries });
 	proxy.destroy();
 	return val;
 }
 
 function global(name: string) {
 	let proxy = pyodide.globals.get(name);
-	let val = proxy.toJs({ dict_converter: Object.fromEntries });
-	proxy.destroy();
-	return val;
+	return convert(proxy);
 }
 
-onmessage = ({ data: { fasta, digestion, csv, missed_cleavages } }) => {
-	let motif = 'N[^P][TS]';
-	let csvFiles = convert(generate_glycopeptides(fasta, digestion, motif, csv, missed_cleavages));
+onmessage = ({ data: parameters }) => {
+	const {
+		proteinFasta,
+		digestions,
+		missedCleavages,
+		minLength,
+		maxLength,
+		semiEnzymatic,
+		glycanCsv,
+		motifs,
+		allPeptides,
+		modifications,
+		maxModifications
+	} = JSON.parse(parameters);
+	const csvFiles = convert(
+		generate_glycopeptides(
+			proteinFasta,
+			digestions,
+			motifs,
+			glycanCsv,
+			modifications,
+			maxModifications,
+			missedCleavages,
+			minLength,
+			maxLength,
+			semiEnzymatic,
+			allPeptides
+		)
+	);
 	csvFiles.forEach(([filename, csv]: [any, any]) => {
 		const blob = new Blob([csv], { type: 'text/csv' });
 		const msg = {
@@ -49,11 +73,10 @@ const generate_glycopeptides = pyodide.globals.get('generate_glycopeptides');
 
 const msg = {
 	type: 'Ready',
-	// FIXME: Fill this in with a variable that matches the `micropip.install` version!
-	version: undefined,
-	digestions: global('DIGESTIONS'),
-	glycosylation_motifs: global('GLYCOSYLATION_MOTIFS')
+	initData: {
+		digestions: global('DIGESTIONS'),
+		glycosylationMotifs: global('GLYCOSYLATION_MOTIFS'),
+		modifications: global('MODIFICATIONS')
+	}
 };
 postMessage(msg);
-
-// console.log(convert(generate_glycopeptides(">A\nPEPTIDE\n>B\nWHOATHERE", "T", "[EI]", "Glycan,Monoisotopic Mass\nABC,300")))

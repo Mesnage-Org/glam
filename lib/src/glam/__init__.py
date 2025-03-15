@@ -57,6 +57,7 @@ DIGESTIONS: dict[str, str] = {
     "Clostripain": r"R",
     "CNBr": r"M",
     "Enterokinase": r"(?<=[DE]{3})K",
+    "Elastase": r"[AVSG](?=[^P])",
     "Factor Xa": r"(?<=[AFGILTVM][DE]G)R",
     "Formic Acid": r"D",
     "Glutamyl Endopeptidase": r"E",
@@ -90,8 +91,14 @@ MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
     "Carbamidomethyl": ("cm", ["C"], 57.021464),
     "N-Deamidation": ("da", ["N"], 0.984016),
 }
-# FIXME: Write the docstring for this!
-# FIXME: Ask Caroline what to call these?
+"""
+A dictionary mapping common post-translational modifications to their properties.
+Each entry contains a tuple with:
+- A short code/abbreviation for the modification
+- A list of target amino acids that can receive this modification
+- The mass shift (delta) in Daltons caused by the modification
+This information is used for mass calculations in peptide analysis.
+"""
 
 # Functions ====================================================================
 
@@ -139,6 +146,12 @@ def generate_glycopeptides(
     max_length : int or None, default: None,
         The maximum length peptide to include in the digest output
     semi : bool, default: False,
+    
+     Returns
+    -------
+    list[tuple[str, str]]
+        A list of tuples, each containing a filename (from protein description)
+        and CSV content with glycopeptide data.
     """
 
     proteins = pyteomics.fasta.read(StringIO(fasta), use_index=False)

@@ -16,7 +16,7 @@ function global(name: string) {
 // These files can also be hosted locally from `/static` if something ever
 // happens to this CDN, but there will be some build-system demons to battle.
 const pyodide = await loadPyodide({
-	indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'
+	indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.5/full/'
 });
 
 await pyodide.loadPackage(['micropip']);

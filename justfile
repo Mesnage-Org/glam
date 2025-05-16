@@ -14,12 +14,13 @@ check-py:
     cd lib && uv run ruff check
     cd lib && uv run ruff format --check
 
-# Formats all code in both `lib/` and `web/`
-# FIXME: Or will do... Eventually
 fmt-py:
     cd lib && uv run ruff format
 
-# Installs the local `glam` package as editable
+build-py:
+    cd lib && uv build
+    cp lib/dist/*.whl web/static/
+
 install-py:
     cd lib && uv pip install -e .
 

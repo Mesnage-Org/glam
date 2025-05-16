@@ -136,7 +136,7 @@ def modify_peptides(
     }
 
 
-def filter_glycopeptides(
+def filter_glycopeptide_candidates(
     peptides: set[Peptide],
     glycosylation_motif: Regex,
 ) -> set[Peptide]:

@@ -12,6 +12,7 @@ regtest-approve-py:
 check-py:
     cd lib && uv run mypy .
     cd lib && uv run ruff check
+    cd lib && uv run ruff format --check
 
 # Formats all code in both `lib/` and `web/`
 # FIXME: Or will do... Eventually

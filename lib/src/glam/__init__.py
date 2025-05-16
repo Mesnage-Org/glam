@@ -91,8 +91,11 @@ MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
     "Carbamidomethyl": ("cm", ["C"], 57.021464),
     "N-Deamidation": ("da", ["N"], 0.984016),
 }
-# FIXME: Write the docstring for this!
-# FIXME: Ask Caroline what to call these?
+"""
+A dictionary mapping common peptide modifications to a tuple that describes
+their abbreviation, the residues they can modify, and their monoisotopic mass
+delta. 
+"""
 
 # Functions ====================================================================
 

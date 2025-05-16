@@ -39,10 +39,13 @@ from glam._lib import (
 # Constants ====================================================================
 
 DIGESTIONS: dict[str, str] = {
+    "2-Nitro-5-Thiocyanatobenzoic Acid": r"\w(?=C)",
     "Arg-C Endopeptidase": r"R",
     "Asp-N Endopeptidase": r"\w(?=D)",
     "BNPS-Skatole": r"W",
+    "CNBr": r"M",
     "Caspase-1": r"(?<=[FWYL]\w[HAT])D(?=[^PEDQKR])",
+    "Caspase-10": r"(?<=IEA)D",
     "Caspase-2": r"(?<=DVA)D(?=[^PEDQKR])",
     "Caspase-3": r"(?<=DMQ)D(?=[^PEDQKR])",
     "Caspase-4": r"(?<=LEV)D(?=[^PEDQKR])",
@@ -51,11 +54,10 @@ DIGESTIONS: dict[str, str] = {
     "Caspase-7": r"(?<=DEV)D(?=[^PEDQKR])",
     "Caspase-8": r"(?<=[IL]ET)D(?=[^PEDQKR])",
     "Caspase-9": r"(?<=LEH)D",
-    "Caspase-10": r"(?<=IEA)D",
     "Chymotrypsin (High Specificity)": r"([FY](?=[^P]))|(W(?=[^MP]))",
     "Chymotrypsin (Low Specificity)": r"([FLY](?=[^P]))|(W(?=[^MP]))|(M(?=[^PY]))|(H(?=[^DMPW]))",
     "Clostripain": r"R",
-    "CNBr": r"M",
+    "Elastase": r"[AVLIST](?=[^P])",
     "Enterokinase": r"(?<=[DE]{3})K",
     "Factor Xa": r"(?<=[AFGILTVM][DE]G)R",
     "Formic Acid": r"D",
@@ -64,7 +66,6 @@ DIGESTIONS: dict[str, str] = {
     "Hydroxylamine": r"N(?=G)",
     "Iodosobenzoic Acid": r"W",
     "LysC": r"K",
-    "2-Nitro-5-Thiocyanatobenzoic Acid": r"\w(?=C)",
     "Pepsin (pH 1.3)": r"((?<=[^HKR][^P])[^R](?=[FL][^P]))|((?<=[^HKR][^P])[FL](?=\w[^P]))",
     "Pepsin (pH 2.0)": r"((?<=[^HKR][^P])[^R](?=[FLWY][^P]))|((?<=[^HKR][^P])[FLWY](?=\w[^P]))",
     "Proline Endopeptidase": r"(?<=[HKR])P(?=[^P])",
@@ -99,7 +100,6 @@ MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
 # FIXME: This docstring is still out of date / wrong!
 def generate_glycopeptides(
     fasta: str,
-    # FIXME: No clue what to call this...
     digestion: str | Pattern[str],
     motif: str | Pattern[str],
     glycans: str,

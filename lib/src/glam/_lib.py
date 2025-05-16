@@ -2,7 +2,7 @@
 
 # Standard Library
 from io import StringIO
-from typing import Iterable, Pattern
+from typing import Iterable, Pattern, NamedTuple
 import csv
 import itertools
 import re
@@ -18,6 +18,31 @@ import pyteomics.parser
 # NOTE: Not quite the monoisotopic water mass that the most accurate mass calculators
 # produce, but it is what `glycowork` seems to be using
 WATER_MASS: float = 18.0105546
+
+# Types ================================================================================
+
+
+# NOTE: Inheriting from `NamedTuple` gives us the immutability we need to store these
+# values in a `set`, and it also makes the fields easy to unpack!
+class Glycan(NamedTuple):
+    name: str
+    mass: float
+
+
+class Peptide(NamedTuple):
+    sequence: str
+    mass: float | None = None
+    # NOTE: This will be important in a future commit!
+    # FIXME: This default value should be `None`, but `()` keeps tests passing for now
+    sites: tuple[str, ...] | None = ()
+
+
+class Glycopeptide(NamedTuple):
+    sequence: str
+    mass: float
+    # NOTE: This will be important in a future commit!
+    sites: tuple[str, ...]
+
 
 # Functions ============================================================================
 
@@ -44,7 +69,7 @@ def glycan_mass(glycan: str) -> float:
         return mass
 
 
-def load_glycans(glycan_csv: str) -> set[tuple[str, float]]:
+def load_glycans(glycan_csv: str) -> set[Glycan]:
     expected_cols = ["Glycan", "Monoisotopic Mass"]
 
     try:
@@ -55,9 +80,9 @@ def load_glycans(glycan_csv: str) -> set[tuple[str, float]]:
     header = next(rows)
 
     if header == expected_cols:
-        return {(g, float(m)) for g, m in rows}
+        return {Glycan(g, float(m)) for g, m in rows}
     elif header == expected_cols[:1]:
-        return {(g, glycan_mass(g)) for (g,) in rows}
+        return {Glycan(g, glycan_mass(g)) for (g,) in rows}
     else:
         raise ValueError(
             "The glycan file must contain either the columns "
@@ -72,70 +97,86 @@ def digest_protein(
     min_length: int | None,
     max_length: int | None,
     semi_enzymatic: bool,
-) -> set[str]:
-    return pyteomics.parser.cleave(
-        seq, rule, missed_cleavages, min_length, max_length, semi_enzymatic, None, True
-    )
+) -> set[Peptide]:
+    return {
+        Peptide(p)
+        for p in pyteomics.parser.cleave(
+            seq,
+            rule,
+            missed_cleavages,
+            min_length,
+            max_length,
+            semi_enzymatic,
+            None,
+            True,
+        )
+    }
 
 
 def modify_peptides(
-    peptides: set[str],
+    peptides: set[Peptide],
     mods: Iterable[tuple[str, list[str], float]],
     max_mods: int | None = None,
-) -> set[str]:
+) -> set[Peptide]:
     variable_mods = {n: ts for (n, ts, _) in mods}
     return {
-        isoform
+        peptide._replace(sequence=isoform)
         for peptide in peptides
-        for isoform in pyteomics.parser.isoforms(peptide, variable_mods=variable_mods)
+        for isoform in pyteomics.parser.isoforms(
+            peptide.sequence, variable_mods=variable_mods
+        )
     }
 
 
 def filter_glycopeptides(
-    peptides: set[str], glycosylation_motif: str | Pattern[str]
-) -> set[str]:
-    return {p for p in peptides if re.search(glycosylation_motif, p)}
+    # FIXME: Maybe a type alias for `str | Pattern[str]`
+    peptides: set[Peptide],
+    glycosylation_motif: str | Pattern[str],
+) -> set[Peptide]:
+    return {p for p in peptides if re.search(glycosylation_motif, p.sequence)}
 
 
 def peptide_masses(
-    peptides: set[str], mods: Iterable[tuple[str, list[str], float]] = []
-) -> set[tuple[str, float]]:
-    def mass(peptide: str) -> float:
+    peptides: set[Peptide], mods: Iterable[tuple[str, list[str], float]] = []
+) -> set[Peptide]:
+    def mass(peptide: Peptide) -> float:
         mod_masses = {n: m for (n, _, m) in mods}
         aa_mass = pyteomics.mass.std_aa_mass | mod_masses
         try:
-            return pyteomics.mass.fast_mass2(peptide, aa_mass=aa_mass)
+            return pyteomics.mass.fast_mass2(peptide.sequence, aa_mass=aa_mass)
         except PyteomicsError as e:
             raise ValueError(
-                f"Unknown amino acid residue found in '{peptide}': {e.message}"
+                f"Unknown amino acid residue found in '{peptide.sequence}': {e.message}"
             )
 
-    return {(p, mass(p)) for p in peptides}
+    return {peptide._replace(mass=mass(peptide)) for peptide in peptides}
 
 
 def build_glycopeptides(
-    peptides: set[tuple[str, float]], glycans: set[tuple[str, float]]
-) -> set[tuple[str, float]]:
-    def build(
-        peptide: tuple[str, float], glycan: tuple[str, float]
-    ) -> tuple[str, float]:
-        peptide_name, peptide_mass = peptide
-        glycan_name, glycan_mass = glycan
-        name = f"{glycan_name}-{peptide_name}"
+    peptides: set[Peptide], glycans: set[Glycan]
+) -> set[Glycopeptide]:
+    def build(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
+        # Ensure the `Peptide` is fully initialized
+        assert peptide.mass is not None
+        assert peptide.sites is not None
+
+        name = f"{glycan.name}-{peptide.sequence}"
         # This is a condensation reaction, so remember to take away a water mass
-        mass = glycan_mass + peptide_mass - WATER_MASS
-        return (name, mass)
+        mass = glycan.mass + peptide.mass - WATER_MASS
+        return Glycopeptide(name, mass, peptide.sites)
 
     return {build(p, g) for p, g in itertools.product(peptides, glycans)}
 
 
-def convert_to_csv(glycopeptides: set[tuple[str, float]]) -> str:
+def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
     csv_str = StringIO()
     writer = csv.writer(csv_str)
     writer.writerow(["Structure", "Monoisotopic Mass"])
 
+    # FIXME: Use a sort key instead of this odd approach...
+    # FIXME: Actually do something with the `sites` value!
     sorted_glycopeptides = sorted(
-        (("-" in name, mass, name) for name, mass in glycopeptides), reverse=True
+        (("-" in name, mass, name) for name, mass, *_ in glycopeptides), reverse=True
     )
 
     for _, mass, name in sorted_glycopeptides:

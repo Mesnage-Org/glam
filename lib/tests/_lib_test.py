@@ -11,6 +11,9 @@ import pytest
 from glam import DIGESTIONS, GLYCOSYLATION_MOTIFS, MODIFICATIONS
 from glam._lib import (
     WATER_MASS,
+    Glycan,
+    Peptide,
+    Glycopeptide,
     glycan_mass,
     load_glycans,
     digest_protein,
@@ -29,12 +32,15 @@ GLYCANS: str = Path("tests/data/chlamy_glycans.csv").read_text()
 GLYCANS_AND_MASSES: str = Path("tests/data/chlamy_glycans_and_masses.csv").read_text()
 
 # Expected Outputs
-TRYPTIC_PEPTIDES: set[str] = set(
-    Path("tests/data/tryptic_peptides.txt").read_text().splitlines()
-)
-GLYCOPEPTIDES: set[str] = set(
-    Path("tests/data/glycopeptides.txt").read_text().splitlines()
-)
+TRYPTIC_PEPTIDES: set[Peptide] = {
+    Peptide(sequence)
+    for sequence in Path("tests/data/tryptic_peptides.txt").read_text().splitlines()
+}
+# FIXME: Rename to `MOTIF_PEPTIDES` or similar? Be sure to rename the .txt file too...
+GLYCOPEPTIDES: set[Peptide] = {
+    Peptide(sequence)
+    for sequence in Path("tests/data/glycopeptides.txt").read_text().splitlines()
+}
 CSV: str = Path("tests/data/csv.csv").read_text().replace("\n", "\r\n")
 
 
@@ -103,14 +109,17 @@ def test_digest_protein() -> None:
 
 
 def test_modify_peptides() -> None:
-    peptides = {"CARNAGE", "CATS"}
+    peptides = {Peptide(s) for s in ["CARNAGE", "CATS"]}
     modified_peptides = {
-        "CARNAGE",
-        "cmCARNAGE",
-        "CARdaNAGE",
-        "cmCARdaNAGE",
-        "CATS",
-        "cmCATS",
+        Peptide(s)
+        for s in [
+            "CARNAGE",
+            "cmCARNAGE",
+            "CARdaNAGE",
+            "cmCARdaNAGE",
+            "CATS",
+            "cmCATS",
+        ]
     }
     assert modify_peptides(peptides, MODIFICATIONS.values()) == modified_peptides
 
@@ -125,18 +134,20 @@ def test_filter_glycopeptides() -> None:
 
 
 def test_peptide_masses() -> None:
-    masses = peptide_masses({"PEPTIDE", "TIME"})
-    assert masses == {("PEPTIDE", 799.3599640267099), ("TIME", 492.2253851302)}
+    masses = peptide_masses({Peptide(s) for s in ["PEPTIDE", "TIME"]})
+    assert masses == {
+        Peptide(*t) for t in [("PEPTIDE", 799.3599640267099), ("TIME", 492.2253851302)]
+    }
 
 
 def test_modified_peptide_masses() -> None:
-    masses = peptide_masses({"PcmEPTIdaDE"}, mods=MODIFICATIONS.values())
-    assert masses == {("PcmEPTIdaDE", 799.3599640267099 + 57.021464 + 0.984016)}
+    masses = peptide_masses({Peptide("PcmEPTIdaDE")}, mods=MODIFICATIONS.values())
+    assert masses == {Peptide("PcmEPTIdaDE", 799.3599640267099 + 57.021464 + 0.984016)}
 
 
 def test_peptide_masses_raises() -> None:
     with pytest.raises(ValueError) as e:
-        peptide_masses({"PEPTIXE"})
+        peptide_masses({Peptide("PEPTIXE")})
     assert str(e.value) == (
         "Unknown amino acid residue found in 'PEPTIXE': "
         "Mass not specified for label(s): X"
@@ -144,31 +155,40 @@ def test_peptide_masses_raises() -> None:
 
 
 def test_build_glycopeptides() -> None:
-    peptides = {("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)}
-    glycans = {("A", 1.0), ("AB", 20.0), ("ABC", 300.0)}
+    peptides = {
+        Peptide(*t, ()) for t in [("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)]
+    }
+    glycans = {Glycan(*t) for t in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
     glycopeptides = {
-        ("A-PEP", 1.2),
-        ("AB-PEP", 20.2),
-        ("ABC-PEP", 300.2),
-        ("A-TIDE", 1.1),
-        ("AB-TIDE", 20.1),
-        ("ABC-TIDE", 300.1),
+        Glycopeptide(*t, ())
+        for t in [
+            ("A-PEP", 1.2),
+            ("AB-PEP", 20.2),
+            ("ABC-PEP", 300.2),
+            ("A-TIDE", 1.1),
+            ("AB-TIDE", 20.1),
+            ("ABC-TIDE", 300.1),
+        ]
     }
     # NOTE: Probably shouldn't be using `float`s for any of these calculations... The
     # floating-point error means that we end up with things like `1.1000000000000014`
     # instead of `1.1`... Look into replacing all of the `float`s with `Decimal`? For
     # now, we'll just round the masses returned from `build_glycopeptides`...
     rounded_glycopeptides = {
-        (n, round(m, ndigits=1)) for n, m in build_glycopeptides(peptides, glycans)
+        Glycopeptide(n, round(m, ndigits=1), s)
+        for n, m, s in build_glycopeptides(peptides, glycans)
     }
     assert rounded_glycopeptides == glycopeptides
 
 
 def test_convert_to_csv() -> None:
     glycopeptides = {
-        ("A", 42.123456789),
-        ("B", 128.123456789),
-        ("C", 1337.123456789),
+        Glycopeptide(*t, ())
+        for t in [
+            ("A", 42.123456789),
+            ("B", 128.123456789),
+            ("C", 1337.123456789),
+        ]
     }
     csv = convert_to_csv(glycopeptides)
     assert csv == CSV

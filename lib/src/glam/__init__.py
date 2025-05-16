@@ -32,7 +32,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     modify_peptides,
-    filter_glycopeptides,
+    filter_glycopeptide_candidates,
     peptide_masses,
     build_glycopeptides,
     convert_to_csv,
@@ -158,7 +158,7 @@ def generate_glycopeptides(
             seq, digestion, missed_cleavages, min_length, max_length, semi_enzymatic
         )
         modified_peptides = modify_peptides(peptides, modifications, max_modifications)
-        motif_peptides = filter_glycopeptides(modified_peptides, motif)
+        motif_peptides = filter_glycopeptide_candidates(modified_peptides, motif)
         motif_peptide_masses = peptide_masses(motif_peptides, modifications)
         glycopeptides = build_glycopeptides(motif_peptide_masses, potential_glycans)
 

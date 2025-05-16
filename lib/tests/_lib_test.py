@@ -18,6 +18,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     modify_peptides,
+    find_glycosylation_sites,
     filter_glycopeptide_candidates,
     peptide_masses,
     build_glycopeptides,
@@ -37,10 +38,8 @@ TRYPTIC_PEPTIDES: set[Peptide] = {
     for sequence in Path("tests/data/tryptic_peptides.txt").read_text().splitlines()
 }
 GLYCOPEPTIDE_CANDIDATES: set[Peptide] = {
-    Peptide(sequence)
-    for sequence in Path("tests/data/glycopeptide_candidates.txt")
-    .read_text()
-    .splitlines()
+    (lambda cols: Peptide(cols[0], sites=tuple(cols[1:])))(line.split(","))
+    for line in Path("tests/data/glycopeptide_candidates.txt").read_text().splitlines()
 }
 CSV: str = Path("tests/data/csv.csv").read_text().replace("\n", "\r\n")
 
@@ -123,6 +122,15 @@ def test_modify_peptides() -> None:
         ]
     }
     assert modify_peptides(peptides, MODIFICATIONS.values()) == modified_peptides
+
+
+def test_find_glycosylation_sites() -> None:
+    peptides = {Peptide(s) for s in ["NVTSTNAT", "NPSEDNPTNTT"]}
+    sites = find_glycosylation_sites(peptides, GLYCOSYLATION_MOTIFS["N"])
+    assert sites == {
+        Peptide(s, sites=t)
+        for s, t in [("NVTSTNAT", ("N1", "N6")), ("NPSEDNPTNTT", ("N9",))]
+    }
 
 
 def test_filter_glycopeptides() -> None:

@@ -86,6 +86,8 @@ A dictionary mapping common glycosylation types to regular expressions that
 describe the sequence motifs they target.
 """
 
+
+# FIXME: I think this could be another good place for a named tuple!
 MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
     "Methionine Oxidation": ("ox", ["M"], 15.994915),
     "Carbamidomethyl": ("cm", ["C"], 57.021464),
@@ -160,6 +162,7 @@ def generate_glycopeptides(
         glycopeptides = build_glycopeptides(motif_peptide_masses, potential_glycans)
 
         if all_peptides:
+            # FIXME: The types are mismatched here — need to sort that out in a future commit!
             glycopeptides |= peptide_masses(modified_peptides, modifications)
 
         csv = convert_to_csv(glycopeptides)

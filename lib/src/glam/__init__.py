@@ -80,7 +80,7 @@ A dictionary mapping common protein digestion treatments to the regular expressi
 that describe their cleavage sites.  
 """
 
-GLYCOSYLATION_MOTIFS: dict[str, str] = {"N": r"N[^P][TS]"}
+GLYCOSYLATION_MOTIFS: dict[str, str] = {"N": r"N(?=[^P][TS])"}
 """
 A dictionary mapping common glycosylation types to regular expressions that
 describe the sequence motifs they target.

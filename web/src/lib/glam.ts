@@ -21,13 +21,8 @@ const pyodide = await loadPyodide({
 
 await pyodide.loadPackage(['micropip']);
 const micropip = pyodide.pyimport('micropip');
-// NOTE: `glycowork` pulls in an insane number of deps... This is one of them
-await micropip.install('requests');
-await micropip.install('theglam==1.1.0');
-// If you need to test development version of pgfinder you should build the wheel and copy the resulting .whl to the
-// lib/ directory (adajacent to this file), replace the version below and comment out the above (which loads from
-// PyPI).
-// await micropip.install('./theglam-1.0.0-py3-none-any.whl');
+
+await micropip.install(`${self.location.origin}/theglam-1.2.0-py3-none-any.whl`);
 await pyodide.runPythonAsync('from glam import *');
 const generate_glycopeptides = pyodide.globals.get('generate_glycopeptides');
 

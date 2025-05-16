@@ -136,11 +136,27 @@ def modify_peptides(
     }
 
 
+def find_glycosylation_sites(
+    peptides: set[Peptide], glycosylation_motif: Regex
+) -> set[Peptide]:
+    def find_sites(peptide: Peptide) -> tuple[str, ...]:
+        # NOTE: This is a `tuple` and not a `list` or `set` because only `tuple`s are hashable! It needs to be a
+        # hashable type so that it can be collected into a `set`!
+        return tuple(
+            f"{m.group()}{m.start() + 1}"
+            for m in re.finditer(glycosylation_motif, peptide.sequence)
+        )
+
+    return {p._replace(sites=find_sites(p)) for p in peptides}
+
+
 def filter_glycopeptide_candidates(
     peptides: set[Peptide],
     glycosylation_motif: Regex,
 ) -> set[Peptide]:
-    return {p for p in peptides if re.search(glycosylation_motif, p.sequence)}
+    # FIXME: Move this out of this function and into __init__.py in a future commit
+    motif_peptides = find_glycosylation_sites(peptides, glycosylation_motif)
+    return {p for p in motif_peptides if p.sites is not None and len(p.sites) != 0}
 
 
 def peptide_masses(

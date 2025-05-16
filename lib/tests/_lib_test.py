@@ -18,7 +18,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     modify_peptides,
-    filter_glycopeptides,
+    filter_glycopeptide_candidates,
     peptide_masses,
     build_glycopeptides,
     convert_to_csv,
@@ -36,10 +36,11 @@ TRYPTIC_PEPTIDES: set[Peptide] = {
     Peptide(sequence)
     for sequence in Path("tests/data/tryptic_peptides.txt").read_text().splitlines()
 }
-# FIXME: Rename to `MOTIF_PEPTIDES` or similar? Be sure to rename the .txt file too...
-GLYCOPEPTIDES: set[Peptide] = {
+GLYCOPEPTIDE_CANDIDATES: set[Peptide] = {
     Peptide(sequence)
-    for sequence in Path("tests/data/glycopeptides.txt").read_text().splitlines()
+    for sequence in Path("tests/data/glycopeptide_candidates.txt")
+    .read_text()
+    .splitlines()
 }
 CSV: str = Path("tests/data/csv.csv").read_text().replace("\n", "\r\n")
 
@@ -128,9 +129,11 @@ def test_filter_glycopeptides() -> None:
     tryptic_peptides = digest_protein(
         SPIKE_PROTEIN, DIGESTIONS["Trypsin"], 0, None, None, False
     )
-    glycopeptides = filter_glycopeptides(tryptic_peptides, GLYCOSYLATION_MOTIFS["N"])
+    glycopeptides = filter_glycopeptide_candidates(
+        tryptic_peptides, GLYCOSYLATION_MOTIFS["N"]
+    )
     assert len(glycopeptides) == 15
-    assert glycopeptides == GLYCOPEPTIDES
+    assert glycopeptides == GLYCOPEPTIDE_CANDIDATES
 
 
 def test_peptide_masses() -> None:

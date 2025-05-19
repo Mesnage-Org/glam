@@ -22,6 +22,11 @@ WATER_MASS: float = 18.0105546
 # Types ================================================================================
 
 
+class Modification(NamedTuple):
+    abbreviation: str
+    targeted_residues: list[str]
+    mass_delta: float
+
 # NOTE: Inheriting from `NamedTuple` gives us the immutability we need to store these
 # values in a `set`, and it also makes the fields easy to unpack!
 class Glycan(NamedTuple):
@@ -115,7 +120,7 @@ def digest_protein(
 
 def modify_peptides(
     peptides: set[Peptide],
-    mods: Iterable[tuple[str, list[str], float]],
+    mods: Iterable[Modification],
     max_mods: int | None = None,
 ) -> set[Peptide]:
     variable_mods = {n: ts for (n, ts, _) in mods}
@@ -137,7 +142,7 @@ def filter_glycopeptides(
 
 
 def peptide_masses(
-    peptides: set[Peptide], mods: Iterable[tuple[str, list[str], float]] = []
+    peptides: set[Peptide], mods: Iterable[Modification] = []
 ) -> set[Peptide]:
     def mass(peptide: Peptide) -> float:
         mod_masses = {n: m for (n, _, m) in mods}

@@ -47,16 +47,16 @@ class Glycopeptide(NamedTuple):
 # Functions ============================================================================
 
 
-def glycan_mass(glycan: str) -> float:
+def glycan_mass(glycan_name: str) -> float:
     mass = 0.0
 
     # Try to parse the string as a fully-defined structure first
     try:
-        mass = glycowork.glycan_to_mass(glycan)
+        mass = glycowork.glycan_to_mass(glycan_name)
     except KeyError:
         # But if that fails, then try just parsing it as a sugar composition
         try:
-            mass = glycowork.composition_to_mass(glycan)
+            mass = glycowork.composition_to_mass(glycan_name)
         except IndexError:
             pass
 
@@ -64,7 +64,7 @@ def glycan_mass(glycan: str) -> float:
     # the result was just a water mass, then whatever we were given wasn't valid, so
     # throw an error as if `mass` were never set
     if mass in [0, WATER_MASS]:
-        raise ValueError(f"Invalid glycan structure / composition: '{glycan}'")
+        raise ValueError(f"Invalid glycan structure / composition: '{glycan_name}'")
     else:
         return mass
 

@@ -32,7 +32,7 @@ from glam._lib import (
     load_glycans,
     digest_protein,
     modify_peptides,
-    filter_glycopeptide_candidates,
+    find_glycosylation_sites,
     peptide_masses,
     build_glycopeptides,
     convert_to_csv,
@@ -148,7 +148,7 @@ def generate_glycopeptides(
     """
 
     proteins = pyteomics.fasta.read(StringIO(fasta), use_index=False)
-    potential_glycans = load_glycans(glycans)
+    loaded_glycans = load_glycans(glycans)
 
     def generate(protein: Protein) -> tuple[str, str]:
         filename = f"{protein.description}.csv"
@@ -157,14 +157,14 @@ def generate_glycopeptides(
         peptides = digest_protein(
             seq, digestion, missed_cleavages, min_length, max_length, semi_enzymatic
         )
-        modified_peptides = modify_peptides(peptides, modifications, max_modifications)
-        motif_peptides = filter_glycopeptide_candidates(modified_peptides, motif)
-        motif_peptide_masses = peptide_masses(motif_peptides, modifications)
-        glycopeptides = build_glycopeptides(motif_peptide_masses, potential_glycans)
-
-        if all_peptides:
-            # FIXME: The types are mismatched here — need to sort that out in a future commit!
-            glycopeptides |= peptide_masses(modified_peptides, modifications)
+        # NOTE: Doing this first is important so that the changes to `Peptide.sequence`
+        # made by `modify_peptides` don't interfere with finding the `motif` regex!
+        site_labelled_peptides = find_glycosylation_sites(peptides, motif)
+        modified_peptides = modify_peptides(
+            site_labelled_peptides, modifications, max_modifications
+        )
+        computed_peptides = peptide_masses(modified_peptides, modifications)
+        glycopeptides = build_glycopeptides(computed_peptides, loaded_glycans, all_peptides)
 
         csv = convert_to_csv(glycopeptides)
         return (filename, csv)

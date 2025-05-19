@@ -40,15 +40,12 @@ class Glycan(NamedTuple):
 class Peptide(NamedTuple):
     sequence: str
     mass: float | None = None
-    # NOTE: This will be important in a future commit!
-    # FIXME: This default value should be `None`, but `()` keeps tests passing for now
-    sites: tuple[str, ...] | None = ()
+    sites: tuple[str, ...] | None = None
 
 
 class Glycopeptide(NamedTuple):
     sequence: str
     mass: float
-    # NOTE: This will be important in a future commit!
     sites: tuple[str, ...]
 
 
@@ -98,6 +95,7 @@ def load_glycans(glycan_csv: str) -> set[Glycan]:
         )
 
 
+# TODO: Also report peptide positions / indicies?
 def digest_protein(
     seq: str,
     rule: Regex,
@@ -152,11 +150,8 @@ def find_glycosylation_sites(
 
 def filter_glycopeptide_candidates(
     peptides: set[Peptide],
-    glycosylation_motif: Regex,
 ) -> set[Peptide]:
-    # FIXME: Move this out of this function and into __init__.py in a future commit
-    motif_peptides = find_glycosylation_sites(peptides, glycosylation_motif)
-    return {p for p in motif_peptides if p.sites is not None and len(p.sites) != 0}
+    return {p for p in peptides if p.sites is not None and len(p.sites) != 0}
 
 
 def peptide_masses(
@@ -176,19 +171,36 @@ def peptide_masses(
 
 
 def build_glycopeptides(
-    peptides: set[Peptide], glycans: set[Glycan]
+    peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
 ) -> set[Glycopeptide]:
-    def build(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
+
+    def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
+        sequence, mass, sites = peptide
+
         # Ensure the `Peptide` is fully initialized
-        assert peptide.mass is not None
-        assert peptide.sites is not None
+        assert mass is not None
+        assert sites is not None
 
-        name = f"{glycan.name}-{peptide.sequence}"
+        return Glycopeptide(sequence, mass, sites)
+
+    def build(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
+        glycopeptide = to_glycopeptide(peptide)
+
+        name = f"{glycan.name}-{glycopeptide.sequence}"
         # This is a condensation reaction, so remember to take away a water mass
-        mass = glycan.mass + peptide.mass - WATER_MASS
-        return Glycopeptide(name, mass, peptide.sites)
+        mass = glycan.mass + glycopeptide.mass - WATER_MASS
 
-    return {build(p, g) for p, g in itertools.product(peptides, glycans)}
+        return glycopeptide._replace(sequence=name, mass=mass)
+
+    glycopeptide_candidates = filter_glycopeptide_candidates(peptides)
+    glycopeptides = {build(p, g) for p, g in itertools.product(glycopeptide_candidates, glycans)}
+
+    # TODO: If `glycopeptides` or `glycans` is empty, I should automatically include the
+    # non-glycopeptides!
+    if all_peptides:
+        glycopeptides |= {to_glycopeptide(p) for p in peptides}
+
+    return glycopeptides
 
 
 def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:

@@ -27,6 +27,7 @@ import pyteomics.fasta
 
 # Local Modules
 from glam._lib import (
+    Modification,
     load_glycans,
     digest_protein,
     modify_peptides,
@@ -87,11 +88,10 @@ describe the sequence motifs they target.
 """
 
 
-# FIXME: I think this could be another good place for a named tuple!
-MODIFICATIONS: dict[str, tuple[str, list[str], float]] = {
-    "Methionine Oxidation": ("ox", ["M"], 15.994915),
-    "Carbamidomethyl": ("cm", ["C"], 57.021464),
-    "N-Deamidation": ("da", ["N"], 0.984016),
+MODIFICATIONS: dict[str, Modification] = {
+    "Methionine Oxidation": Modification("ox", ["M"], 15.994915),
+    "Carbamidomethyl": Modification("cm", ["C"], 57.021464),
+    "N-Deamidation": Modification("da", ["N"], 0.984016),
 }
 """
 A dictionary mapping common peptide modifications to a tuple that describes
@@ -108,7 +108,7 @@ def generate_glycopeptides(
     digestion: str | Pattern[str],
     motif: str | Pattern[str],
     glycans: str,
-    modifications: Iterable[tuple[str, list[str], float]] = [],
+    modifications: Iterable[Modification] = [],
     max_modifications: int | None = None,
     missed_cleavages: int = 0,
     min_length: int | None = None,

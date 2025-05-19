@@ -19,7 +19,7 @@ print("Test?")
 
 # Standard Library
 from io import StringIO
-from typing import Iterable, Pattern
+from typing import Iterable
 
 # Dependencies
 from pyteomics.fasta import Protein
@@ -27,6 +27,7 @@ import pyteomics.fasta
 
 # Local Modules
 from glam._lib import (
+    Regex,
     Modification,
     load_glycans,
     digest_protein,
@@ -105,8 +106,8 @@ delta.
 # FIXME: This docstring is still out of date / wrong!
 def generate_glycopeptides(
     fasta: str,
-    digestion: str | Pattern[str],
-    motif: str | Pattern[str],
+    digestion: Regex,
+    motif: Regex,
     glycans: str,
     modifications: Iterable[Modification] = [],
     max_modifications: int | None = None,

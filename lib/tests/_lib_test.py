@@ -126,8 +126,10 @@ def test_modify_peptides() -> None:
 
 def test_find_glycosylation_sites() -> None:
     peptides = {Peptide(s) for s in ["NVTSTNAT", "NPSEDNPTNTT"]}
-    sites = find_glycosylation_sites(peptides, GLYCOSYLATION_MOTIFS["N"])
-    assert sites == {
+    site_labelled_peptides = find_glycosylation_sites(
+        peptides, GLYCOSYLATION_MOTIFS["N"]
+    )
+    assert site_labelled_peptides == {
         Peptide(s, sites=t)
         for s, t in [("NVTSTNAT", ("N1", "N6")), ("NPSEDNPTNTT", ("N9",))]
     }
@@ -137,9 +139,10 @@ def test_filter_glycopeptides() -> None:
     tryptic_peptides = digest_protein(
         SPIKE_PROTEIN, DIGESTIONS["Trypsin"], 0, None, None, False
     )
-    glycopeptides = filter_glycopeptide_candidates(
+    site_labelled_peptides = find_glycosylation_sites(
         tryptic_peptides, GLYCOSYLATION_MOTIFS["N"]
     )
+    glycopeptides = filter_glycopeptide_candidates(site_labelled_peptides)
     assert len(glycopeptides) == 15
     assert glycopeptides == GLYCOPEPTIDE_CANDIDATES
 
@@ -165,13 +168,13 @@ def test_peptide_masses_raises() -> None:
     )
 
 
-def test_build_glycopeptides() -> None:
+def test_build_just_glycopeptides() -> None:
     peptides = {
-        Peptide(*t, ()) for t in [("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)]
+        Peptide(*t, ('N0',)) for t in [("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)]
     }
     glycans = {Glycan(*t) for t in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
     glycopeptides = {
-        Glycopeptide(*t, ())
+        Glycopeptide(*t, ('N0',))
         for t in [
             ("A-PEP", 1.2),
             ("AB-PEP", 20.2),
@@ -187,7 +190,32 @@ def test_build_glycopeptides() -> None:
     # now, we'll just round the masses returned from `build_glycopeptides`...
     rounded_glycopeptides = {
         Glycopeptide(n, round(m, ndigits=1), s)
-        for n, m, s in build_glycopeptides(peptides, glycans)
+        for n, m, s in build_glycopeptides(peptides, glycans, False)
+    }
+    assert rounded_glycopeptides == glycopeptides
+
+def test_build_glycopeptides_and_peptides() -> None:
+    peptides = {
+        Peptide(*t) for t in [("PEP", WATER_MASS + 0.2, ('N0',)), ("TIDE", WATER_MASS + 0.1, ())]
+    }
+    glycans = {Glycan(*t) for t in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
+    glycopeptides = {
+        Glycopeptide(*t)
+        for t in [
+            ("A-PEP", 1.2, ('N0',)),
+            ("AB-PEP", 20.2, ('N0',)),
+            ("ABC-PEP", 300.2, ('N0',)),
+            ("PEP", 18.2, ('N0',)),
+            ("TIDE", 18.1, ()),
+        ]
+    }
+    # NOTE: Probably shouldn't be using `float`s for any of these calculations... The
+    # floating-point error means that we end up with things like `1.1000000000000014`
+    # instead of `1.1`... Look into replacing all of the `float`s with `Decimal`? For
+    # now, we'll just round the masses returned from `build_glycopeptides`...
+    rounded_glycopeptides = {
+        Glycopeptide(n, round(m, ndigits=1), s)
+        for n, m, s in build_glycopeptides(peptides, glycans, True)
     }
     assert rounded_glycopeptides == glycopeptides
 

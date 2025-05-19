@@ -21,11 +21,14 @@ WATER_MASS: float = 18.0105546
 
 # Types ================================================================================
 
+type Regex = str | Pattern[str]
+
 
 class Modification(NamedTuple):
     abbreviation: str
     targeted_residues: list[str]
     mass_delta: float
+
 
 # NOTE: Inheriting from `NamedTuple` gives us the immutability we need to store these
 # values in a `set`, and it also makes the fields easy to unpack!
@@ -97,7 +100,7 @@ def load_glycans(glycan_csv: str) -> set[Glycan]:
 
 def digest_protein(
     seq: str,
-    rule: str | Pattern[str],
+    rule: Regex,
     missed_cleavages: int,
     min_length: int | None,
     max_length: int | None,
@@ -134,9 +137,8 @@ def modify_peptides(
 
 
 def filter_glycopeptides(
-    # FIXME: Maybe a type alias for `str | Pattern[str]`
     peptides: set[Peptide],
-    glycosylation_motif: str | Pattern[str],
+    glycosylation_motif: Regex,
 ) -> set[Peptide]:
     return {p for p in peptides if re.search(glycosylation_motif, p.sequence)}
 

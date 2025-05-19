@@ -1,5 +1,5 @@
 """
-A (very) small package for generating
+A small package for generating
 [PGFinder](https://github.com/Mesnage-Org/pgfinder)-compatible glycopeptide
 databases.
 

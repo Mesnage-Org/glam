@@ -217,13 +217,15 @@ def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
     writer = csv.writer(csv_str)
     writer.writerow(["Structure", "Monoisotopic Mass"])
 
-    # FIXME: Use a sort key instead of this odd approach...
-    # FIXME: Actually do something with the `sites` value!
+    def glycans_mass_then_name(g: Glycopeptide) -> tuple[bool, float, str]:
+        return ("-" in g.sequence, g.mass, g.sequence)
+
     sorted_glycopeptides = sorted(
-        (("-" in name, mass, name) for name, mass, *_ in glycopeptides), reverse=True
+        glycopeptides, key=glycans_mass_then_name, reverse=True
     )
 
-    for _, mass, name in sorted_glycopeptides:
+    # FIXME: Actually do something with the `sites` value!
+    for name, mass, _ in sorted_glycopeptides:
         mass = round(mass, 6)
         # NOTE: This is a nasty hack for PGFinder, which expects a `|1` type suffix
         # after the name of each structure. Really, that's a design flaw in PGFinder,

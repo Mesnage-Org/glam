@@ -236,11 +236,11 @@ def test_build_glycopeptides_and_peptides() -> None:
 
 def test_convert_to_csv() -> None:
     glycopeptides = {
-        Glycopeptide(*t, ())
+        Glycopeptide(*t)
         for t in [
-            ("A", 42.123456789),
-            ("B", 128.123456789),
-            ("C", 1337.123456789),
+            ("A", 42.123456789, ("N4",)),
+            ("B", 128.123456789, ("N2", "N3")),
+            ("C", 1337.123456789, ("N1",)),
         ]
     }
     csv = convert_to_csv(glycopeptides)

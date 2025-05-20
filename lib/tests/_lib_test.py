@@ -135,6 +135,17 @@ def test_find_glycosylation_sites() -> None:
     }
 
 
+def test_find_modified_glycosylation_sites() -> None:
+    peptides = {Peptide(s) for s in ["daNVTSTNoxAT", "daNPoxSEamDNPTNTT"]}
+    site_labelled_peptides = find_glycosylation_sites(
+        peptides, GLYCOSYLATION_MOTIFS["N"]
+    )
+    assert site_labelled_peptides == {
+        Peptide(s, sites=t)
+        for s, t in [("daNVTSTNoxAT", ("N6",)), ("daNPoxSEamDNPTNTT", ("N9",))]
+    }
+
+
 def test_filter_glycopeptides() -> None:
     tryptic_peptides = digest_protein(
         SPIKE_PROTEIN, DIGESTIONS["Trypsin"], 0, None, None, False

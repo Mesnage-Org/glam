@@ -173,7 +173,6 @@ def peptide_masses(
 def build_glycopeptides(
     peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
 ) -> set[Glycopeptide]:
-
     def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
         sequence, mass, sites = peptide
 
@@ -193,7 +192,9 @@ def build_glycopeptides(
         return glycopeptide._replace(sequence=name, mass=mass)
 
     glycopeptide_candidates = filter_glycopeptide_candidates(peptides)
-    glycopeptides = {build(p, g) for p, g in itertools.product(glycopeptide_candidates, glycans)}
+    glycopeptides = {
+        build(p, g) for p, g in itertools.product(glycopeptide_candidates, glycans)
+    }
 
     # TODO: If `glycopeptides` or `glycans` is empty, I should automatically include the
     # non-glycopeptides!

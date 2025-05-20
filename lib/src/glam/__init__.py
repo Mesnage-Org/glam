@@ -160,12 +160,12 @@ def generate_glycopeptides(
         # NOTE: Doing this first is important so that `find_glycosylation_sites` is
         # aware of modifications. Otherwise it will be possible to have N-residues that
         # are both modified and glycosylated (which isn't biologically possible)!
-        modified_peptides = modify_peptides(
-            peptides, modifications, max_modifications
-        )
+        modified_peptides = modify_peptides(peptides, modifications, max_modifications)
         massive_peptides = peptide_masses(modified_peptides, modifications)
         computed_peptides = find_glycosylation_sites(massive_peptides, motif)
-        glycopeptides = build_glycopeptides(computed_peptides, loaded_glycans, all_peptides)
+        glycopeptides = build_glycopeptides(
+            computed_peptides, loaded_glycans, all_peptides
+        )
 
         csv = convert_to_csv(glycopeptides)
         return (filename, csv)

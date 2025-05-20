@@ -170,11 +170,12 @@ def test_peptide_masses_raises() -> None:
 
 def test_build_just_glycopeptides() -> None:
     peptides = {
-        Peptide(*t, ('N0',)) for t in [("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)]
+        Peptide(*t, ("N0",))
+        for t in [("PEP", WATER_MASS + 0.2), ("TIDE", WATER_MASS + 0.1)]
     }
     glycans = {Glycan(*t) for t in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
     glycopeptides = {
-        Glycopeptide(*t, ('N0',))
+        Glycopeptide(*t, ("N0",))
         for t in [
             ("A-PEP", 1.2),
             ("AB-PEP", 20.2),
@@ -194,18 +195,20 @@ def test_build_just_glycopeptides() -> None:
     }
     assert rounded_glycopeptides == glycopeptides
 
+
 def test_build_glycopeptides_and_peptides() -> None:
     peptides = {
-        Peptide(*t) for t in [("PEP", WATER_MASS + 0.2, ('N0',)), ("TIDE", WATER_MASS + 0.1, ())]
+        Peptide(*t)
+        for t in [("PEP", WATER_MASS + 0.2, ("N0",)), ("TIDE", WATER_MASS + 0.1, ())]
     }
     glycans = {Glycan(*t) for t in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
     glycopeptides = {
         Glycopeptide(*t)
         for t in [
-            ("A-PEP", 1.2, ('N0',)),
-            ("AB-PEP", 20.2, ('N0',)),
-            ("ABC-PEP", 300.2, ('N0',)),
-            ("PEP", 18.2, ('N0',)),
+            ("A-PEP", 1.2, ("N0",)),
+            ("AB-PEP", 20.2, ("N0",)),
+            ("ABC-PEP", 300.2, ("N0",)),
+            ("PEP", 18.2, ("N0",)),
             ("TIDE", 18.1, ()),
         ]
     }

@@ -82,7 +82,7 @@ A dictionary mapping common protein digestion treatments to the regular expressi
 that describe their cleavage sites.  
 """
 
-GLYCOSYLATION_MOTIFS: dict[str, str] = {"N": r"N(?=[^P][TS])"}
+GLYCOSYLATION_MOTIFS: dict[str, str] = {"N": r"(?<![a-z])N(?=[a-z]*[^P][a-z]*[TS])"}
 """
 A dictionary mapping common glycosylation types to regular expressions that
 describe the sequence motifs they target.
@@ -157,13 +157,14 @@ def generate_glycopeptides(
         peptides = digest_protein(
             seq, digestion, missed_cleavages, min_length, max_length, semi_enzymatic
         )
-        # NOTE: Doing this first is important so that the changes to `Peptide.sequence`
-        # made by `modify_peptides` don't interfere with finding the `motif` regex!
-        site_labelled_peptides = find_glycosylation_sites(peptides, motif)
+        # NOTE: Doing this first is important so that `find_glycosylation_sites` is
+        # aware of modifications. Otherwise it will be possible to have N-residues that
+        # are both modified and glycosylated (which isn't biologically possible)!
         modified_peptides = modify_peptides(
-            site_labelled_peptides, modifications, max_modifications
+            peptides, modifications, max_modifications
         )
-        computed_peptides = peptide_masses(modified_peptides, modifications)
+        massive_peptides = peptide_masses(modified_peptides, modifications)
+        computed_peptides = find_glycosylation_sites(massive_peptides, motif)
         glycopeptides = build_glycopeptides(computed_peptides, loaded_glycans, all_peptides)
 
         csv = convert_to_csv(glycopeptides)

@@ -1,4 +1,4 @@
-Structure,Monoisotopic Mass
-C|1,1337.123457
-B|1,128.123457
-A|1,42.123457
+Structure,Monoisotopic Mass,Glycosylation Sites
+C|1,1337.123457,N1
+B|1,128.123457,"N2, N3"
+A|1,42.123457,N4

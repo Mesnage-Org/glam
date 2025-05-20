@@ -215,7 +215,7 @@ def build_glycopeptides(
 def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
     csv_str = StringIO()
     writer = csv.writer(csv_str)
-    writer.writerow(["Structure", "Monoisotopic Mass"])
+    writer.writerow(["Structure", "Monoisotopic Mass", "Glycosylation Sites"])
 
     def glycans_mass_then_name(g: Glycopeptide) -> tuple[bool, float, str]:
         return ("-" in g.sequence, g.mass, g.sequence)
@@ -224,13 +224,14 @@ def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
         glycopeptides, key=glycans_mass_then_name, reverse=True
     )
 
-    # FIXME: Actually do something with the `sites` value!
-    for name, mass, _ in sorted_glycopeptides:
-        mass = round(mass, 6)
+    for g in sorted_glycopeptides:
         # NOTE: This is a nasty hack for PGFinder, which expects a `|1` type suffix
         # after the name of each structure. Really, that's a design flaw in PGFinder,
         # but we'll fix it here for now...
-        hacky_name = f"{name}|1"
-        writer.writerow([hacky_name, mass])
+        name = f"{g.sequence}|1"
+        mass = round(g.mass, 6)
+        sites = ", ".join(g.sites)
+
+        writer.writerow([name, mass, sites])
 
     return csv_str.getvalue()

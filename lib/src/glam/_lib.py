@@ -40,12 +40,14 @@ class Glycan(NamedTuple):
 
 class Peptide(NamedTuple):
     sequence: str
+    location: tuple[int, int]
     mass: float | None = None
     sites: tuple[str, ...] | None = None
 
 
 class Glycopeptide(NamedTuple):
     sequence: str
+    position: tuple[int, int]
     mass: float
     sites: tuple[str, ...]
 
@@ -96,7 +98,6 @@ def load_glycans(glycan_csv: str) -> set[Glycan]:
         )
 
 
-# TODO: Also report peptide positions / indicies?
 def digest_protein(
     seq: str,
     rule: Regex,
@@ -105,9 +106,15 @@ def digest_protein(
     max_length: int | None,
     semi_enzymatic: bool,
 ) -> set[Peptide]:
+    def build_peptide(index: int, sequence: str) -> Peptide:
+        start = index + 1
+        end = start + len(sequence)
+
+        return Peptide(sequence, (start, end))
+
     return {
-        Peptide(p)
-        for p in pyteomics.parser.cleave(
+        build_peptide(*t)
+        for t in pyteomics.parser.icleave(
             seq,
             rule,
             missed_cleavages,
@@ -182,13 +189,13 @@ def build_glycopeptides(
     peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
 ) -> set[Glycopeptide]:
     def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
-        sequence, mass, sites = peptide
+        sequence, location, mass, sites = peptide
 
         # Ensure the `Peptide` is fully initialized
         assert mass is not None
         assert sites is not None
 
-        return Glycopeptide(sequence, mass, sites)
+        return Glycopeptide(sequence, location, mass, sites)
 
     def build(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
         glycopeptide = to_glycopeptide(peptide)
@@ -215,7 +222,15 @@ def build_glycopeptides(
 def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
     csv_str = StringIO()
     writer = csv.writer(csv_str)
-    writer.writerow(["Structure", "Monoisotopic Mass", "Glycosylation Sites"])
+    writer.writerow(
+        [
+            "Structure",
+            "Monoisotopic Mass",
+            "Start Position",
+            "End Position",
+            "Glycosylation Sites",
+        ]
+    )
 
     def glycans_mass_then_name(g: Glycopeptide) -> tuple[bool, float, str]:
         return ("-" in g.sequence, g.mass, g.sequence)
@@ -229,9 +244,10 @@ def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
         # after the name of each structure. Really, that's a design flaw in PGFinder,
         # but we'll fix it here for now...
         name = f"{g.sequence}|1"
+        start, end = g.position
         mass = round(g.mass, 6)
         sites = ", ".join(g.sites)
 
-        writer.writerow([name, mass, sites])
+        writer.writerow([name, mass, start, end, sites])
 
     return csv_str.getvalue()

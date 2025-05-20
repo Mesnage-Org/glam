@@ -5,6 +5,7 @@ from io import StringIO
 from typing import Iterable, Pattern, NamedTuple
 import csv
 import itertools
+from re import Match
 import re
 
 # Dependencies
@@ -138,11 +139,18 @@ def find_glycosylation_sites(
     peptides: set[Peptide], glycosylation_motif: Regex
 ) -> set[Peptide]:
     def find_sites(peptide: Peptide) -> tuple[str, ...]:
+        def name_site(match: Match[str]):
+            residue = match.group()
+            index = match.start() + 1
+
+            index -= sum(c.islower() for c in peptide.sequence[:index])
+
+            return f"{residue}{index}"
+
         # NOTE: This is a `tuple` and not a `list` or `set` because only `tuple`s are hashable! It needs to be a
         # hashable type so that it can be collected into a `set`!
         return tuple(
-            f"{m.group()}{m.start() + 1}"
-            for m in re.finditer(glycosylation_motif, peptide.sequence)
+            name_site(m) for m in re.finditer(glycosylation_motif, peptide.sequence)
         )
 
     return {p._replace(sites=find_sites(p)) for p in peptides}

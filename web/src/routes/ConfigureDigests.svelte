@@ -7,7 +7,7 @@
 	// Internal Components
 	import AdvancedOptions from './AdvancedOptions.svelte';
 	import MissedCleavages from './ConfigureDigests/MissedCleavages.svelte';
-	import PeptideLength from './ConfigureDigests/PeptideLength.svelte';
+	import OptionalCount from './OptionalCount.svelte';
 	import SemiSpecific from './ConfigureDigests/SemiSpecific.svelte';
 	import BuiltInDigestions from './ConfigureDigests/BuiltInDigestions.svelte';
 
@@ -34,9 +34,9 @@
 	<AdvancedOptions>
 		<MissedCleavages bind:value={digestSettings.missedCleavages} />
 		<hr class="border-surface-200-800" />
-		<PeptideLength type="Minimum" bind:value={digestSettings.minLength} />
+		<OptionalCount label="Minimum Peptide Length" bind:value={digestSettings.minLength} />
 		<hr class="border-surface-200-800" />
-		<PeptideLength type="Maximum" bind:value={digestSettings.maxLength} />
+		<OptionalCount label="Maximum Peptide Length" bind:value={digestSettings.maxLength} />
 		<hr class="border-surface-200-800" />
 		<SemiSpecific bind:value={digestSettings.semiEnzymatic} />
 	</AdvancedOptions>

@@ -8,5 +8,5 @@
 <FileDropzone
 	subtext="Upload a protein-containing FASTA file"
 	accept={{ 'text/x-fasta': ['.fasta', '.fas', '.fa', '.faa', '.mpfa'] }}
-	onFileAccept={(t: string) => (parameters.proteinFasta = t)}
+	onFileAccept={(t: string) => (parameters.fasta = t)}
 />

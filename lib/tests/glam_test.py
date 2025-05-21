@@ -34,6 +34,7 @@ def test_modifications(regtest) -> None:
         GLYCOSYLATION_MOTIFS["N"],
         CHLAMY_GLYCANS,
         MODIFICATIONS.values(),
+        max_glycans=1,
     )
     regtest.write(glycopeptides[0][1])
 
@@ -45,6 +46,7 @@ def test_modifications_all_peptides(regtest) -> None:
         GLYCOSYLATION_MOTIFS["N"],
         CHLAMY_GLYCANS,
         MODIFICATIONS.values(),
+        max_glycans=1,
         all_peptides=True,
     )
     regtest.write(glycopeptides[0][1])

@@ -7,7 +7,7 @@ def isoforms(
     max_mods: int | None = None,
     **kwargs,
 ) -> Iterator[str]: ...
-def cleave(
+def icleave(
     sequence: str,
     rule: str | Pattern[str],
     missed_cleavages: int,
@@ -16,4 +16,4 @@ def cleave(
     semi: bool,
     exception: str | Pattern[str] | None,
     regex: bool,
-) -> set[str]: ...
+) -> Iterator[tuple[int, str]]: ...

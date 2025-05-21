@@ -232,7 +232,7 @@ def test_build_just_glycopeptides() -> None:
     # now, we'll just round the masses returned from `build_glycopeptides`...
     rounded_glycopeptides = {
         g._replace(mass=round(g.mass, ndigits=1))
-        for g in build_glycopeptides(peptides, glycans, False)
+        for g in build_glycopeptides(peptides, glycans, None, False)
     }
     assert rounded_glycopeptides == glycopeptides
 
@@ -267,7 +267,36 @@ def test_build_multiple_glycan_peptides() -> None:
 
     rounded_glycopeptides = {
         g._replace(mass=round(g.mass, ndigits=1))
-        for g in build_glycopeptides(peptides, glycans, False)
+        for g in build_glycopeptides(peptides, glycans, None, False)
+    }
+    assert rounded_glycopeptides == glycopeptides
+
+
+def test_build_max_glycan_peptides() -> None:
+    peptides = {
+        Peptide(s, POS, m, t)
+        for s, m, t in [
+            ("PEP", WATER_MASS + 0.2, ("N0",)),
+            ("TIDE", WATER_MASS + 0.1, ("N0", "N1")),
+            ("S", WATER_MASS, ()),
+        ]
+    }
+    glycans = {Glycan(*t) for t in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
+    glycopeptides = {
+        Glycopeptide(s, POS, m, t)
+        for s, m, t in [
+            ("A-PEP", 1.2, ("N0",)),
+            ("AB-PEP", 20.2, ("N0",)),
+            ("ABC-PEP", 300.2, ("N0",)),
+            ("A-TIDE", 1.1, ("N0", "N1")),
+            ("AB-TIDE", 20.1, ("N0", "N1")),
+            ("ABC-TIDE", 300.1, ("N0", "N1")),
+        ]
+    }
+
+    rounded_glycopeptides = {
+        g._replace(mass=round(g.mass, ndigits=1))
+        for g in build_glycopeptides(peptides, glycans, 1, False)
     }
     assert rounded_glycopeptides == glycopeptides
 
@@ -294,7 +323,7 @@ def test_build_glycopeptides_and_peptides() -> None:
 
     rounded_glycopeptides = {
         g._replace(mass=round(g.mass, ndigits=1))
-        for g in build_glycopeptides(peptides, glycans, True)
+        for g in build_glycopeptides(peptides, glycans, None, True)
     }
     assert rounded_glycopeptides == glycopeptides
 
@@ -319,7 +348,7 @@ def test_build_just_peptides() -> None:
         g._replace(mass=round(g.mass, ndigits=1))
         # NOTE: It's important that this is `False`, so that automatic `all_peptides`
         # activation kicks in
-        for g in build_glycopeptides(peptides, set(), False)
+        for g in build_glycopeptides(peptides, set(), None, False)
     }
     assert rounded_glycopeptides == glycopeptides
 

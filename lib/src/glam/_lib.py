@@ -120,6 +120,9 @@ def digest_protein(
 
         return Peptide(sequence, Position(start, end))
 
+    if rule == "":
+        return {build_peptide(0, seq)}
+
     return {
         build_peptide(*t)
         for t in pyteomics.parser.icleave(

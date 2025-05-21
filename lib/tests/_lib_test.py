@@ -116,6 +116,16 @@ def test_digest_protein() -> None:
     assert tryptic_peptides == TRYPTIC_PEPTIDES
 
 
+def test_undigested_protein() -> None:
+    tryptic_peptides = digest_protein(SPIKE_PROTEIN, "", 0, None, None, False)
+    assert len(tryptic_peptides)
+
+    [single_peptide] = tryptic_peptides
+    assert single_peptide.sequence == SPIKE_PROTEIN
+    assert single_peptide.position.start == 1
+    assert single_peptide.position.end == 1280
+
+
 def test_modify_peptides() -> None:
     peptides = {Peptide(s, POS) for s in ["CARNAGE", "CATS"]}
     modified_peptides = {

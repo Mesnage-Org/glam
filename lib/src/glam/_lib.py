@@ -225,9 +225,7 @@ def build_glycopeptides(
         build(p, g) for p, g in itertools.product(glycopeptide_candidates, glycans)
     }
 
-    # TODO: If `glycopeptides` or `glycans` is empty, I should automatically include the
-    # non-glycopeptides!
-    if all_peptides:
+    if all_peptides or len(glycopeptides) == 0:
         glycopeptides |= {to_glycopeptide(p) for p in peptides}
 
     return glycopeptides

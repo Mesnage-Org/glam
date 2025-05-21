@@ -232,11 +232,11 @@ def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
         ]
     )
 
-    def glycans_mass_then_name(g: Glycopeptide) -> tuple[bool, float, str]:
-        return ("-" in g.sequence, g.mass, g.sequence)
+    def glycans_mass_name_then_start(g: Glycopeptide) -> tuple[bool, float, str, int]:
+        return ("-" in g.sequence, g.mass, g.sequence, g.position[0])
 
     sorted_glycopeptides = sorted(
-        glycopeptides, key=glycans_mass_then_name, reverse=True
+        glycopeptides, key=glycans_mass_name_then_start, reverse=True
     )
 
     for g in sorted_glycopeptides:

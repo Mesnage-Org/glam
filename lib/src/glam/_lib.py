@@ -199,30 +199,33 @@ def peptide_masses(
     return {peptide._replace(mass=mass(peptide)) for peptide in peptides}
 
 
+def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
+    sequence, position, mass, sites = peptide
+
+    # Ensure the `Peptide` is fully initialized
+    assert mass is not None
+    assert sites is not None
+
+    return Glycopeptide(sequence, position, mass, sites)
+
+
+def build_glycopeptide(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
+    glycopeptide = to_glycopeptide(peptide)
+
+    name = f"{glycan.name}-{glycopeptide.sequence}"
+    # This is a condensation reaction, so remember to take away a water mass
+    mass = glycan.mass + glycopeptide.mass - WATER_MASS
+
+    return glycopeptide._replace(sequence=name, mass=mass)
+
+
 def build_glycopeptides(
     peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
 ) -> set[Glycopeptide]:
-    def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
-        sequence, position, mass, sites = peptide
-
-        # Ensure the `Peptide` is fully initialized
-        assert mass is not None
-        assert sites is not None
-
-        return Glycopeptide(sequence, position, mass, sites)
-
-    def build(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
-        glycopeptide = to_glycopeptide(peptide)
-
-        name = f"{glycan.name}-{glycopeptide.sequence}"
-        # This is a condensation reaction, so remember to take away a water mass
-        mass = glycan.mass + glycopeptide.mass - WATER_MASS
-
-        return glycopeptide._replace(sequence=name, mass=mass)
-
     glycopeptide_candidates = filter_glycopeptide_candidates(peptides)
     glycopeptides = {
-        build(p, g) for p, g in itertools.product(glycopeptide_candidates, glycans)
+        build_glycopeptide(p, g)
+        for p, g in itertools.product(glycopeptide_candidates, glycans)
     }
 
     if all_peptides or len(glycopeptides) == 0:

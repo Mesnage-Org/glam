@@ -116,6 +116,7 @@ def generate_glycopeptides(
     max_length: int | None = None,
     semi_enzymatic: bool = False,
     all_peptides: bool = False,
+    max_glycans: int | None = None,
     **kwargs,
 ) -> list[tuple[str, str]]:
     """Generates glycopeptides from an input FASTA and CSV file of glycans.
@@ -164,7 +165,7 @@ def generate_glycopeptides(
         massive_peptides = peptide_masses(modified_peptides, modifications)
         computed_peptides = find_glycosylation_sites(massive_peptides, motif)
         glycopeptides = build_glycopeptides(
-            computed_peptides, loaded_glycans, all_peptides
+            computed_peptides, loaded_glycans, max_glycans, all_peptides
         )
 
         csv = convert_to_csv(glycopeptides)

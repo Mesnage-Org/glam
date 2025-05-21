@@ -221,7 +221,7 @@ def build_glycopeptide(peptide: Peptide, glycans: set[Glycan]) -> set[Glycopepti
 
     return {
         build(g)
-        for c in range(1)
+        for c in range(len(glycopeptide.sites))
         for g in combinations_with_replacement(glycans, c + 1)
     }
 

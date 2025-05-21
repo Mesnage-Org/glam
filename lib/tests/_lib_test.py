@@ -11,6 +11,7 @@ import pytest
 from glam import DIGESTIONS, GLYCOSYLATION_MOTIFS, MODIFICATIONS
 from glam._lib import (
     WATER_MASS,
+    Position,
     Glycan,
     Peptide,
     Glycopeptide,
@@ -34,13 +35,15 @@ GLYCANS_AND_MASSES: str = Path("tests/data/chlamy_glycans_and_masses.csv").read_
 
 # Expected Outputs
 TRYPTIC_PEPTIDES: set[Peptide] = {
-    (lambda cols: Peptide(cols[0], (int(cols[1]), int(cols[2]))))(line.split(","))
+    (lambda cols: Peptide(cols[0], Position(int(cols[1]), int(cols[2]))))(
+        line.split(",")
+    )
     for line in Path("tests/data/tryptic_peptides.txt").read_text().splitlines()
 }
 GLYCOPEPTIDE_CANDIDATES: set[Peptide] = {
     (
         lambda cols: Peptide(
-            cols[0], (int(cols[1]), int(cols[2])), sites=tuple(cols[3:])
+            cols[0], Position(int(cols[1]), int(cols[2])), sites=tuple(cols[3:])
         )
     )(line.split(","))
     for line in Path("tests/data/glycopeptide_candidates.txt").read_text().splitlines()
@@ -48,7 +51,7 @@ GLYCOPEPTIDE_CANDIDATES: set[Peptide] = {
 CSV: str = Path("tests/data/csv.csv").read_text().replace("\n", "\r\n")
 
 # Placeholder Values
-POS: tuple[int, int] = (0, 0)
+POS: Position = Position(0, 0)
 
 # Unit Tests ===========================================================================
 

@@ -25,7 +25,7 @@
 				<BuiltInMotifs />
 			</Tabs.Panel>
 			<Tabs.Panel value="custom">
-				<input class="input" type="text" bind:value={glycosylationSettings.regex} />
+				<input class="input" type="text" bind:value={glycosylationSettings.motif} />
 			</Tabs.Panel>
 		{/snippet}
 	</Tabs>

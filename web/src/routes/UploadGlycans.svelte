@@ -8,5 +8,5 @@
 <FileDropzone
 	subtext="Upload a glycan database file (.csv)"
 	accept="text/csv"
-	onFileAccept={(t: string) => (parameters.glycanCsv = t)}
+	onFileAccept={(t: string) => (parameters.glycans = t)}
 />

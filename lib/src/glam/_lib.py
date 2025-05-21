@@ -40,7 +40,7 @@ class Glycan(NamedTuple):
 
 class Peptide(NamedTuple):
     sequence: str
-    location: tuple[int, int]
+    position: tuple[int, int]
     mass: float | None = None
     sites: tuple[str, ...] | None = None
 
@@ -189,13 +189,13 @@ def build_glycopeptides(
     peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
 ) -> set[Glycopeptide]:
     def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
-        sequence, location, mass, sites = peptide
+        sequence, position, mass, sites = peptide
 
         # Ensure the `Peptide` is fully initialized
         assert mass is not None
         assert sites is not None
 
-        return Glycopeptide(sequence, location, mass, sites)
+        return Glycopeptide(sequence, position, mass, sites)
 
     def build(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
         glycopeptide = to_glycopeptide(peptide)

@@ -108,7 +108,7 @@ def generate_glycopeptides(
     fasta: str,
     digestion: Regex,
     motif: Regex,
-    glycans: str,
+    glycans: str | None,
     modifications: Iterable[Modification] = [],
     max_modifications: int | None = None,
     missed_cleavages: int = 0,

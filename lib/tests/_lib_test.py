@@ -225,6 +225,7 @@ def test_build_just_glycopeptides() -> None:
             ("ABC-TIDE", 300.1),
         ]
     }
+
     # NOTE: Probably shouldn't be using `float`s for any of these calculations... The
     # floating-point error means that we end up with things like `1.1000000000000014`
     # instead of `1.1`... Look into replacing all of the `float`s with `Decimal`? For
@@ -255,13 +256,35 @@ def test_build_glycopeptides_and_peptides() -> None:
             ("TIDE", 18.1, ()),
         ]
     }
-    # NOTE: Probably shouldn't be using `float`s for any of these calculations... The
-    # floating-point error means that we end up with things like `1.1000000000000014`
-    # instead of `1.1`... Look into replacing all of the `float`s with `Decimal`? For
-    # now, we'll just round the masses returned from `build_glycopeptides`...
+
     rounded_glycopeptides = {
         g._replace(mass=round(g.mass, ndigits=1))
         for g in build_glycopeptides(peptides, glycans, True)
+    }
+    assert rounded_glycopeptides == glycopeptides
+
+
+def test_build_just_peptides() -> None:
+    peptides = {
+        Peptide(s, POS, m, t)
+        for s, m, t in [
+            ("PEP", WATER_MASS + 0.2, ("N0",)),
+            ("TIDE", WATER_MASS + 0.1, ()),
+        ]
+    }
+    glycopeptides = {
+        Glycopeptide(s, POS, m, t)
+        for s, m, t in [
+            ("PEP", 18.2, ("N0",)),
+            ("TIDE", 18.1, ()),
+        ]
+    }
+
+    rounded_glycopeptides = {
+        g._replace(mass=round(g.mass, ndigits=1))
+        # NOTE: It's important that this is `False`, so that automatic `all_peptides`
+        # activation kicks in
+        for g in build_glycopeptides(peptides, set(), False)
     }
     assert rounded_glycopeptides == glycopeptides
 

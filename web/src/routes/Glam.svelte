@@ -58,7 +58,7 @@
 	);
 
 	let isReady = $derived(
-		parameters.proteinFasta !== undefined && parameters.glycanCsv !== undefined && !glamBusy
+		parameters.proteinFasta !== undefined && !glamBusy
 	);
 
 	function onFinish() {

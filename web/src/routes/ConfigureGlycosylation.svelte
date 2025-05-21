@@ -8,6 +8,7 @@
 	import AdvancedOptions from './AdvancedOptions.svelte';
 	import AllPeptides from './ConfigureGlycosylation/AllPeptides.svelte';
 	import BuiltInMotifs from './ConfigureGlycosylation/BuiltInMotifs.svelte';
+	import OptionalCount from './OptionalCount.svelte';
 
 	let glycosylationSettings = getParameters().glycosylationSettings;
 
@@ -30,6 +31,8 @@
 		{/snippet}
 	</Tabs>
 	<AdvancedOptions>
+		<OptionalCount label="Maximum Glycan Count" bind:value={glycosylationSettings.maxGlycans} />
+		<hr class="border-surface-200-800" />
 		<AllPeptides bind:value={glycosylationSettings.allPeptides} />
 	</AdvancedOptions>
 </form>

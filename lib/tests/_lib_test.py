@@ -164,6 +164,14 @@ def test_find_modified_glycosylation_sites() -> None:
     }
 
 
+def test_find_empty_glycosylation_sites() -> None:
+    peptides = {Peptide(s, POS) for s in ["NVTSTNAT", "NPSEDNPTNTT"]}
+    site_labelled_peptides = find_glycosylation_sites(peptides, "")
+    assert site_labelled_peptides == {
+        Peptide(s, POS, sites=tuple()) for s in [("NVTSTNAT"), ("NPSEDNPTNTT")]
+    }
+
+
 def test_filter_glycopeptides() -> None:
     tryptic_peptides = digest_protein(
         SPIKE_PROTEIN, DIGESTIONS["Trypsin"], 0, None, None, False

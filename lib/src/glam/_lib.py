@@ -113,7 +113,7 @@ def digest_protein(
 ) -> set[Peptide]:
     def build_peptide(index: int, sequence: str) -> Peptide:
         start = index + 1
-        end = start + len(sequence)
+        end = index + len(sequence) 
 
         return Peptide(sequence, Position(start, end))
 

@@ -157,6 +157,9 @@ def find_glycosylation_sites(
     peptides: set[Peptide], glycosylation_motif: Regex
 ) -> set[Peptide]:
     def find_sites(peptide: Peptide) -> tuple[str, ...]:
+        if glycosylation_motif == "":
+            return tuple()
+
         def name_site(match: Match[str]):
             residue = match.group()
             index = match.start() + peptide.position.start

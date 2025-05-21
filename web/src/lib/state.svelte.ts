@@ -26,22 +26,23 @@ export class InitData {
 }
 
 export class Parameters {
-	proteinFasta: string | undefined = $state();
+	fasta: string | undefined = $state();
 	digestSettings: DigestSettings = $state(new DigestSettings());
-	glycanCsv: string | undefined = $state();
+	glycans: string | undefined = $state();
 	glycosylationSettings: GlycosylationSettings = $state(new GlycosylationSettings());
 	modificationSettings: ModificationSettings = $state(new ModificationSettings());
 
 	toJSON() {
 		return {
-			proteinFasta: this.proteinFasta,
-			digestions: this.digestSettings.regex,
+			fasta: this.fasta,
+			digestion: this.digestSettings.digestion,
 			missedCleavages: this.digestSettings.missedCleavages,
 			minLength: this.digestSettings.minLength,
 			maxLength: this.digestSettings.maxLength,
 			semiEnzymatic: this.digestSettings.semiEnzymatic,
-			glycanCsv: this.glycanCsv,
-			motifs: this.glycosylationSettings.regex,
+			glycans: this.glycans,
+			motif: this.glycosylationSettings.motif,
+			maxGlycans: this.glycosylationSettings.maxGlycans,
 			allPeptides: this.glycosylationSettings.allPeptides,
 			modifications: this.modificationSettings.modifications,
 			maxModifications: this.modificationSettings.maxModifications
@@ -50,7 +51,7 @@ export class Parameters {
 }
 
 class DigestSettings {
-	regex: string = $state('');
+	digestion: string = $state('');
 	missedCleavages: number = $state(0);
 	minLength: number | null = $state(null);
 	maxLength: number | null = $state(null);
@@ -58,7 +59,8 @@ class DigestSettings {
 }
 
 class GlycosylationSettings {
-	regex: string = $state('');
+	motif: string = $state('');
+	maxGlycans: number | null = $state(null);
 	allPeptides: boolean = $state(false);
 }
 

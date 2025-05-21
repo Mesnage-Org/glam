@@ -10,7 +10,7 @@
 
 	function onchange() {
 		const regex = value.map((name) => initData.glycosylationMotifs!.get(name)).join('|');
-		glycosylationSettings.regex = regex;
+		glycosylationSettings.motif = regex;
 	}
 </script>
 

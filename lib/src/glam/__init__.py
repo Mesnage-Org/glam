@@ -106,17 +106,17 @@ delta.
 # FIXME: This docstring is still out of date / wrong!
 def generate_glycopeptides(
     fasta: str,
-    digestion: Regex,
-    motif: Regex,
-    glycans: str | None,
-    modifications: Iterable[Modification] = [],
-    max_modifications: int | None = None,
+    digestion: Regex = "",
     missed_cleavages: int = 0,
     min_length: int | None = None,
     max_length: int | None = None,
     semi_enzymatic: bool = False,
-    all_peptides: bool = False,
+    glycans: str | None = None,
+    motif: Regex = "",
     max_glycans: int | None = None,
+    all_peptides: bool = False,
+    modifications: Iterable[Modification] = [],
+    max_modifications: int | None = None,
     **kwargs,
 ) -> list[tuple[str, str]]:
     """Generates glycopeptides from an input FASTA and CSV file of glycans.

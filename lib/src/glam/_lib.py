@@ -153,7 +153,7 @@ def find_glycosylation_sites(
     def find_sites(peptide: Peptide) -> tuple[str, ...]:
         def name_site(match: Match[str]):
             residue = match.group()
-            index = match.start() + 1
+            index = match.start() + peptide.position.start
 
             index -= sum(c.islower() for c in peptide.sequence[:index])
 

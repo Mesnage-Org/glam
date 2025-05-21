@@ -51,7 +51,7 @@ GLYCOPEPTIDE_CANDIDATES: set[Peptide] = {
 CSV: str = Path("tests/data/csv.csv").read_text().replace("\n", "\r\n")
 
 # Placeholder Values
-POS: Position = Position(0, 0)
+POS: Position = Position(1, 10)
 
 # Unit Tests ===========================================================================
 

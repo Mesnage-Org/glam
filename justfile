@@ -41,6 +41,10 @@ build-py:
 install-py:
     cd lib && uv pip install -e .
 
+document-py:
+    -rm -r web/static/docs/
+    cd lib && uv run pdoc --html src/glam -o ../web/static/docs/
+
 # Web Runners ==================================================================
 
 check-web:

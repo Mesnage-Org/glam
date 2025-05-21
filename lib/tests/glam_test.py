@@ -11,7 +11,10 @@ CHLAMY_GLYCANS: str = Path("tests/data/chlamy_glycans.csv").read_text()
 
 def test_basic(regtest) -> None:
     glycopeptides = generate_glycopeptides(
-        SPIKE_PROTEIN, DIGESTIONS["Trypsin"], GLYCOSYLATION_MOTIFS["N"], CHLAMY_GLYCANS
+        SPIKE_PROTEIN,
+        digestion=DIGESTIONS["Trypsin"],
+        glycans=CHLAMY_GLYCANS,
+        motif=GLYCOSYLATION_MOTIFS["N"],
     )
     regtest.write(glycopeptides[0][1])
 
@@ -19,9 +22,9 @@ def test_basic(regtest) -> None:
 def test_all_peptides(regtest) -> None:
     glycopeptides = generate_glycopeptides(
         SPIKE_PROTEIN,
-        DIGESTIONS["Trypsin"],
-        GLYCOSYLATION_MOTIFS["N"],
-        CHLAMY_GLYCANS,
+        digestion=DIGESTIONS["Trypsin"],
+        glycans=CHLAMY_GLYCANS,
+        motif=GLYCOSYLATION_MOTIFS["N"],
         all_peptides=True,
     )
     regtest.write(glycopeptides[0][1])
@@ -30,11 +33,11 @@ def test_all_peptides(regtest) -> None:
 def test_modifications(regtest) -> None:
     glycopeptides = generate_glycopeptides(
         SPIKE_PROTEIN,
-        DIGESTIONS["Trypsin"],
-        GLYCOSYLATION_MOTIFS["N"],
-        CHLAMY_GLYCANS,
-        MODIFICATIONS.values(),
+        digestion=DIGESTIONS["Trypsin"],
+        glycans=CHLAMY_GLYCANS,
+        motif=GLYCOSYLATION_MOTIFS["N"],
         max_glycans=1,
+        modifications=MODIFICATIONS.values(),
     )
     regtest.write(glycopeptides[0][1])
 
@@ -42,11 +45,11 @@ def test_modifications(regtest) -> None:
 def test_modifications_all_peptides(regtest) -> None:
     glycopeptides = generate_glycopeptides(
         SPIKE_PROTEIN,
-        DIGESTIONS["Trypsin"],
-        GLYCOSYLATION_MOTIFS["N"],
-        CHLAMY_GLYCANS,
-        MODIFICATIONS.values(),
+        digestion=DIGESTIONS["Trypsin"],
+        glycans=CHLAMY_GLYCANS,
+        motif=GLYCOSYLATION_MOTIFS["N"],
         max_glycans=1,
         all_peptides=True,
+        modifications=MODIFICATIONS.values(),
     )
     regtest.write(glycopeptides[0][1])

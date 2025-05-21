@@ -27,7 +27,7 @@
 				<BuiltInDigestions />
 			</Tabs.Panel>
 			<Tabs.Panel value="custom">
-				<input class="input" type="text" bind:value={digestSettings.regex} />
+				<input class="input" type="text" bind:value={digestSettings.digestion} />
 			</Tabs.Panel>
 		{/snippet}
 	</Tabs>

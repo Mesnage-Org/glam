@@ -38,31 +38,33 @@ postMessage(msg);
 
 onmessage = ({ data: parameters }) => {
 	const {
-		proteinFasta,
-		digestions,
+		fasta,
+		digestion,
 		missedCleavages,
 		minLength,
 		maxLength,
 		semiEnzymatic,
-		glycanCsv,
-		motifs,
+		glycans,
+		motif,
+		maxGlycans,
 		allPeptides,
 		modifications,
 		maxModifications
 	} = JSON.parse(parameters);
 	const csvFiles = convert(
 		generate_glycopeptides(
-			proteinFasta,
-			digestions,
-			motifs,
-			glycanCsv,
-			modifications,
-			maxModifications,
+			fasta,
+			digestion,
 			missedCleavages,
 			minLength,
 			maxLength,
 			semiEnzymatic,
-			allPeptides
+			glycans,
+			motif,
+			maxGlycans,
+			allPeptides,
+			modifications,
+			maxModifications
 		)
 	);
 	csvFiles.forEach(([filename, csv]: [any, any]) => {

@@ -9,7 +9,7 @@
 
 	function onchange() {
 		const regex = value.map((name) => initData.digestions!.get(name)).join('|');
-		digestSettings.regex = regex;
+		digestSettings.digestion = regex;
 	}
 </script>
 

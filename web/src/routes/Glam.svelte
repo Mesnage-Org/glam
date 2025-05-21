@@ -44,22 +44,21 @@
 	$inspect(initData.digestions, initData.glycosylationMotifs, initData.modifications);
 
 	$inspect(
-		parameters.proteinFasta,
-		parameters.digestSettings.regex,
+		parameters.fasta,
+		parameters.digestSettings.digestion,
 		parameters.digestSettings.missedCleavages,
 		parameters.digestSettings.minLength,
 		parameters.digestSettings.maxLength,
 		parameters.digestSettings.semiEnzymatic,
-		parameters.glycanCsv,
-		parameters.glycosylationSettings.regex,
+		parameters.glycans,
+		parameters.glycosylationSettings.motif,
+		parameters.glycosylationSettings.maxGlycans,
 		parameters.glycosylationSettings.allPeptides,
 		parameters.modificationSettings.modifications,
 		parameters.modificationSettings.maxModifications
 	);
 
-	let isReady = $derived(
-		parameters.proteinFasta !== undefined && !glamBusy
-	);
+	let isReady = $derived(parameters.fasta !== undefined && !glamBusy);
 
 	function onFinish() {
 		glam.postMessage(JSON.stringify(parameters));

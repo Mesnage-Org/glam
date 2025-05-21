@@ -34,13 +34,13 @@ GLYCANS_AND_MASSES: str = Path("tests/data/chlamy_glycans_and_masses.csv").read_
 
 # Expected Outputs
 TRYPTIC_PEPTIDES: set[Peptide] = {
-    (lambda cols: Peptide(cols[0], tuple(int(c) for c in cols[1:])))(line.split(","))
+    (lambda cols: Peptide(cols[0], (int(cols[1]), int(cols[2]))))(line.split(","))
     for line in Path("tests/data/tryptic_peptides.txt").read_text().splitlines()
 }
 GLYCOPEPTIDE_CANDIDATES: set[Peptide] = {
     (
         lambda cols: Peptide(
-            cols[0], tuple(int(c) for c in cols[1:3]), sites=tuple(cols[3:])
+            cols[0], (int(cols[1]), int(cols[2])), sites=tuple(cols[3:])
         )
     )(line.split(","))
     for line in Path("tests/data/glycopeptide_candidates.txt").read_text().splitlines()
@@ -217,16 +217,16 @@ def test_build_just_glycopeptides() -> None:
 
 def test_build_glycopeptides_and_peptides() -> None:
     peptides = {
-        Peptide(s, POS, *t)
-        for s, *t in [
+        Peptide(s, POS, m, t)
+        for s, m, t in [
             ("PEP", WATER_MASS + 0.2, ("N0",)),
             ("TIDE", WATER_MASS + 0.1, ()),
         ]
     }
     glycans = {Glycan(s, m) for s, m in [("A", 1.0), ("AB", 20.0), ("ABC", 300.0)]}
     glycopeptides = {
-        Glycopeptide(s, POS, *t)
-        for s, *t in [
+        Glycopeptide(s, POS, m, t)
+        for s, m, t in [
             ("A-PEP", 1.2, ("N0",)),
             ("AB-PEP", 20.2, ("N0",)),
             ("ABC-PEP", 300.2, ("N0",)),
@@ -247,8 +247,8 @@ def test_build_glycopeptides_and_peptides() -> None:
 
 def test_convert_to_csv() -> None:
     glycopeptides = {
-        Glycopeptide(s, POS, *t)
-        for s, *t in [
+        Glycopeptide(s, POS, m, t)
+        for s, m, t in [
             ("A", 42.123456789, ("N4",)),
             ("B", 128.123456789, ("N2", "N3")),
             ("C", 1337.123456789, ("N1",)),

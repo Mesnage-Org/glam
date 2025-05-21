@@ -209,7 +209,9 @@ def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
     return Glycopeptide(sequence, position, mass, sites)
 
 
-def build_glycopeptide(peptide: Peptide, glycans: set[Glycan]) -> set[Glycopeptide]:
+def build_glycopeptide(
+    peptide: Peptide, glycans: set[Glycan], max_glycans: int | None
+) -> set[Glycopeptide]:
     glycopeptide = to_glycopeptide(peptide)
 
     def build(glycan_set: tuple[Glycan, ...]):
@@ -219,20 +221,26 @@ def build_glycopeptide(peptide: Peptide, glycans: set[Glycan]) -> set[Glycopepti
 
         return glycopeptide._replace(sequence=name, mass=mass)
 
+    sites = len(glycopeptide.sites)
+    max_glycan_count = sites if max_glycans is None else min(sites, max_glycans)
+
     return {
         build(g)
-        for c in range(len(glycopeptide.sites))
+        for c in range(max_glycan_count)
         for g in combinations_with_replacement(glycans, c + 1)
     }
 
 
 def build_glycopeptides(
-    peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
+    peptides: set[Peptide],
+    glycans: set[Glycan],
+    max_glycans: int | None,
+    all_peptides: bool,
 ) -> set[Glycopeptide]:
     glycopeptides = {
         g
         for p in filter_glycopeptide_candidates(peptides)
-        for g in build_glycopeptide(p, glycans)
+        for g in build_glycopeptide(p, glycans, max_glycans)
     }
 
     if all_peptides or len(glycopeptides) == 0:

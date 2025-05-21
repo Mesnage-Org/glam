@@ -4,7 +4,7 @@
 from io import StringIO
 from typing import Iterable, Pattern, NamedTuple
 import csv
-import itertools
+from itertools import combinations_with_replacement
 from re import Match
 import re
 
@@ -209,23 +209,30 @@ def to_glycopeptide(peptide: Peptide) -> Glycopeptide:
     return Glycopeptide(sequence, position, mass, sites)
 
 
-def build_glycopeptide(peptide: Peptide, glycan: Glycan) -> Glycopeptide:
+def build_glycopeptide(peptide: Peptide, glycans: set[Glycan]) -> set[Glycopeptide]:
     glycopeptide = to_glycopeptide(peptide)
 
-    name = f"{glycan.name}-{glycopeptide.sequence}"
-    # This is a condensation reaction, so remember to take away a water mass
-    mass = glycan.mass + glycopeptide.mass - WATER_MASS
+    def build(glycan_set: tuple[Glycan, ...]):
+        name = f"{'+'.join(sorted(g.name for g in glycan_set))}-{glycopeptide.sequence}"
+        # This is a condensation reaction, so remember to take away a water mass
+        mass = sum(g.mass for g in glycan_set) + glycopeptide.mass - WATER_MASS
 
-    return glycopeptide._replace(sequence=name, mass=mass)
+        return glycopeptide._replace(sequence=name, mass=mass)
+
+    return {
+        build(g)
+        for c in range(1)
+        for g in combinations_with_replacement(glycans, c + 1)
+    }
 
 
 def build_glycopeptides(
     peptides: set[Peptide], glycans: set[Glycan], all_peptides: bool
 ) -> set[Glycopeptide]:
-    glycopeptide_candidates = filter_glycopeptide_candidates(peptides)
     glycopeptides = {
-        build_glycopeptide(p, g)
-        for p, g in itertools.product(glycopeptide_candidates, glycans)
+        g
+        for p in filter_glycopeptide_candidates(peptides)
+        for g in build_glycopeptide(p, glycans)
     }
 
     if all_peptides or len(glycopeptides) == 0:

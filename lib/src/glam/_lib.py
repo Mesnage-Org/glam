@@ -82,8 +82,11 @@ def glycan_mass(glycan_name: str) -> float:
         return mass
 
 
-def load_glycans(glycan_csv: str) -> set[Glycan]:
+def load_glycans(glycan_csv: str | None) -> set[Glycan]:
     expected_cols = ["Glycan", "Monoisotopic Mass"]
+
+    if glycan_csv is None:
+        return set()
 
     try:
         rows = csv.reader(StringIO(glycan_csv))
@@ -113,7 +116,7 @@ def digest_protein(
 ) -> set[Peptide]:
     def build_peptide(index: int, sequence: str) -> Peptide:
         start = index + 1
-        end = index + len(sequence) 
+        end = index + len(sequence)
 
         return Peptide(sequence, Position(start, end))
 

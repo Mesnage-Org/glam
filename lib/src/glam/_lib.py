@@ -38,16 +38,21 @@ class Glycan(NamedTuple):
     mass: float
 
 
+class Position(NamedTuple):
+    start: int
+    end: int
+
+
 class Peptide(NamedTuple):
     sequence: str
-    position: tuple[int, int]
+    position: Position
     mass: float | None = None
     sites: tuple[str, ...] | None = None
 
 
 class Glycopeptide(NamedTuple):
     sequence: str
-    position: tuple[int, int]
+    position: Position
     mass: float
     sites: tuple[str, ...]
 
@@ -110,7 +115,7 @@ def digest_protein(
         start = index + 1
         end = start + len(sequence)
 
-        return Peptide(sequence, (start, end))
+        return Peptide(sequence, Position(start, end))
 
     return {
         build_peptide(*t)
@@ -233,7 +238,7 @@ def convert_to_csv(glycopeptides: set[Glycopeptide]) -> str:
     )
 
     def glycans_mass_name_then_start(g: Glycopeptide) -> tuple[bool, float, str, int]:
-        return ("-" in g.sequence, g.mass, g.sequence, g.position[0])
+        return ("-" in g.sequence, g.mass, g.sequence, g.position.start)
 
     sorted_glycopeptides = sorted(
         glycopeptides, key=glycans_mass_name_then_start, reverse=True

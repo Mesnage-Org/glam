@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { type, value = $bindable() } = $props();
+	let { label, value = $bindable() } = $props();
 
 	import { Switch } from '@skeletonlabs/skeleton-svelte';
 
@@ -16,7 +16,7 @@
 </script>
 
 <label class="label flex items-center justify-between">
-	<span class="text-nowrap">{type} Peptide Length</span>
+	<span class="text-nowrap">{label}</span>
 	<Switch {checked} {onCheckedChange} />
 </label>
 {#if checked}

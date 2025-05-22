@@ -7,7 +7,7 @@
 	// Icons
 	import { Settings2 } from 'lucide-svelte';
 
-	let value = $state([]);
+	let value: string[] = $state([]);
 </script>
 
 <Accordion {value} onValueChange={(e) => (value = e.value)} collapsible>

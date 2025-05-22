@@ -1,2 +1,6 @@
 __pycache__/
 *.egg-info/
+web/static/*.whl
+web/static/docs/
+web/build/
+lib/dist/

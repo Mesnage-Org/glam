@@ -16,6 +16,8 @@ check: check-py check-web
 
 format: format-py format-web
 
+build: build-py build-web
+
 install: install-py install-web
 
 # Python Runners ===============================================================
@@ -54,5 +56,14 @@ check-web:
 format-web:
     cd web && bun format
     
+build-web:
+    cd web && bun run build
+
 install-web:
     cd web && bun install
+
+# CI Runners ===================================================================
+
+ci: test check
+
+ci-pages: install document-py build

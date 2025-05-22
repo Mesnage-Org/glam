@@ -16,9 +16,7 @@ jobs:
 
       - env:
           BASE_PATH: '/${{ github.event.repository.name }}'
-        run: |
-          just ci-pages
-          touch web/build/.nojekyll
+        run: just ci-pages
 
       - uses: actions/upload-pages-artifact@v3
         with:

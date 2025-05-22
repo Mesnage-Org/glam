@@ -8,26 +8,17 @@ on:
 jobs:
   build_site:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v2
+      - uses: astral-sh/setup-uv@v5
+      - uses: oven-sh/setup-bun@v2
 
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v2
+      - run: |
+          just ci-pages
+          touch web/build/.nojekyll
 
-      - name: Install dependencies
-        run: bun install
-
-      - name: build
-        run: |
-          bun run build
-          touch build/.nojekyll
-
-      - name: Upload Artifacts
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: 'web/build/'
 
@@ -44,6 +35,5 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4

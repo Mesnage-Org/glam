@@ -41,6 +41,7 @@ build-py:
     cp lib/dist/*.whl web/static/
 
 install-py:
+    cd lib && uv venv
     cd lib && uv pip install -e .
 
 document-py:
@@ -64,6 +65,6 @@ install-web:
 
 # CI Runners ===================================================================
 
-ci: test check
+ci: install test check
 
 ci-pages: install document-py build

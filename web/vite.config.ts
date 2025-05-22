@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit(), tailwindcss()],
 	worker: {
+		plugins: () => [sveltekit()],
 		format: 'es'
 	},
 	esbuild: {

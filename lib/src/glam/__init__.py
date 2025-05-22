@@ -2,17 +2,6 @@
 A small package for generating
 [PGFinder](https://github.com/Mesnage-Org/pgfinder)-compatible glycopeptide
 databases.
-
-Just supply a FASTA file containing the protein(s) of interest,
-specify the digestion parameters, a glycosylation motif, and a list of potential
-glycan compositions / structures.
-
-# INCLUDE A SHORT CODE EXAMPLE HERE!
-We can include a markdown file that shows how to use the web interface /
-whatever other documentation seems useful!
-```py
-print("Test?")
-```
 """
 
 # Imports ======================================================================
@@ -37,6 +26,17 @@ from glam._lib import (
     build_glycopeptides,
     convert_to_csv,
 )
+
+# Curated Exports ==============================================================
+
+__all__ = [
+    "Regex",
+    "Modification",
+    "DIGESTIONS",
+    "GLYCOSYLATION_MOTIFS",
+    "MODIFICATIONS",
+    "generate_glycopeptides",
+]
 
 # Constants ====================================================================
 
@@ -119,7 +119,12 @@ def generate_glycopeptides(
     max_modifications: int | None = None,
     **kwargs,
 ) -> list[tuple[str, str]]:
-    """Generates glycopeptides from an input FASTA and CSV file of glycans.
+    """Generates (glyco)peptides from an input FASTA and CSV file of glycans.
+
+    The only *required* input is a FASTA file containing one or more protein sequences.
+    Typically, you'll also want to select a digestion method, provide a CSV file of
+    glycans, and specify a glycosylation motif to attach them to. A number of other
+    options are available for narrowing or broadening the search space.
 
     Parameters
     ----------
@@ -127,25 +132,50 @@ def generate_glycopeptides(
         FASTA text describing the protein sequence(s) to be digested. Note that this
         function ***does not*** read from the filesystem — you'll need to first load
         your FASTA file into a `str` using something like `pathlib.Path.read_text`.
-    enzyme : str or Pattern[str],
-        The name of the enyzme used to digest the protein into peptides. A number of
-        enzymes are built-in (see `pyteomics.parser.expasy_rules` and
-        `pyteomics.parser.psims_rules`), but a custom (optionally pre-compiled)
-        regex describing the enzyme's cleavage site can also be supplied. For more
-        information, see `pyteomics`'s documentation.
-    motif : str or Pattern[str],
-        A regex describing the sequence motif for glycosylation. Only peptides
-        containing this motif will be used to generate the final list of glycopeptides.
-        See the `glam.GLYCOSYLATION_MOTIFS` dictionary for common motifs.
-    glycans : str,
 
-    missed_cleavages : int, default: 0,
-        The maximum number of missed cleavages to allow during digestion
+    digestion : str or Pattern[str], default: ""
+        A regular expression used to digest the protein into peptides. The protein will
+        be cut right *after* the regex match. A number of digestions and their regexes
+        are built-in (see `DIGESTIONS`).
+    missed_cleavages : int, default: 0
+        The maximum number of missed cleavages to allow during digestion.
     min_length : int or None, default: None,
-        The minimum length peptide to include in the digest output
+        The minimum length peptide to include in the digest output.
     max_length : int or None, default: None,
-        The maximum length peptide to include in the digest output
-    semi : bool, default: False,
+        The maximum length peptide to include in the digest output.
+    semi_enzymatic : bool, default: False,
+        Whether to include the products of semi-specific cleavage. This effectively cuts
+        every peptide at every position and includes the result in the digest output.
+
+    glycans : str or None, default: None
+        A CSV file containing a `Glycan` column and optionally a
+        `Monoisotopic Mass` column. If only a `Glycan` column is present, then the
+        strings within it will be interpreted as glycan structures in either Oxford or
+        IUPAC notation, or compositions like `Hex(2)Pent(1)HexNAc(1)` (see the
+        `glycowork` package for a list of supported sugars). If a `Monoisotopic Mass`
+        column is present, then the strings in the `Glycan` column are left
+        uninterpreted and act only as names for the provided masses. Note that this
+        function ***does not*** read from the filesystem — you'll need to first load
+        your FASTA file into a `str` using something like `pathlib.Path.read_text`.
+    motif : str or Pattern[str], default: ""
+        A regular expression describing the sequence motif for glycosylation. By
+        default, only peptides containing this motif will be used to generate the final
+        list of glycopeptides. A number of glycosylation motifs and their regexes are
+        built-in (see `GLYCOSYLATION_MOTIFS`).
+    max_glycans: int or None, default: None
+        The maximum number of glycans to allow per peptide.
+    all_peptides: bool, default: False
+        Whether to include peptides without any detected glycosylation motifs. If set to
+        `True`, then both glycosylated and non-glycosylated peptides will be included in
+        the output.
+
+    modifications: Iterable[Modification], default: []
+        A list of modifications to apply to the digested peptides. Each modification has
+        a *lowercase* abbreviation, a list of residues that it can be applied to, and a
+        monoisotopic mass delta. A number of modifications are built-in (see
+        `MODIFICATIONS`).
+    max_modifications: int or None, default: None
+        The maximum number of modifications to allow per peptide.
     """
 
     proteins = pyteomics.fasta.read(StringIO(fasta), use_index=False)

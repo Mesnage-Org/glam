@@ -14,7 +14,9 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - uses: oven-sh/setup-bun@v2
 
-      - run: |
+      - env:
+          BASE_PATH: '/${{ github.event.repository.name }}'
+        run: |
           just ci-pages
           touch web/build/.nojekyll
 

@@ -3,7 +3,6 @@
 
 	// Icons
 	import { ArrowLeft, ArrowRight, Download } from 'lucide-svelte';
-	import FileDropzone from './FileDropzone.svelte';
 
 	// Reactive
 	let currentStep = $state(0);
@@ -34,14 +33,14 @@
 		<div class="relative">
 			<!-- Numerals -->
 			<div class="flex items-center justify-between gap-4">
-				{#each steps as step, i}
+				{#each steps as step, i (step.title)}
 					<!-- Numeral Button -->
 					<button
 						class="btn-icon btn-icon-sm rounded-full {isCurrentStep(i)
 							? 'preset-filled-primary-500'
 							: 'preset-filled-surface-200-800'}"
 						onclick={() => setStep(i)}
-						title={step.label}
+						title={step.title}
 					>
 						<span class="font-bold">{i + 1}</span>
 					</button>

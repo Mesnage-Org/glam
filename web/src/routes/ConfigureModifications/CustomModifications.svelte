@@ -3,18 +3,15 @@
 
 	import { CircleX, CirclePlus } from 'lucide-svelte';
 
-	let joinedModifications: [string, string, number][] = $state([]);
-
 	let modificationSettings = getParameters().modificationSettings;
 
-	// NOTE: Using `$effect` to overwrite `joinedModifications` if the user changed `modifications` via the `Built-In` tab
-	$effect(() => {
-		joinedModifications = modificationSettings.modifications.map(([abbr, targets, offset]) => [
+	let joinedModifications: [string, string, number][] = $derived(
+		modificationSettings.modifications.map(([abbr, targets, offset]) => [
 			abbr,
 			targets.filter((t) => t !== '').join(', '),
 			offset
-		]);
-	});
+		])
+	);
 
 	function onchange() {
 		const mods = joinedModifications.map(([abbr, targets, offset]): [string, string[], number] => [
@@ -33,7 +30,7 @@
 		<label class="label label-text" for="targets">Target Residues</label>
 		<label class="label label-text" for="offset">Mass Offset</label>
 	{/if}
-	{#each joinedModifications as value, i}
+	{#each joinedModifications as value, i (value[0])}
 		<input class="input col-start-1" type="text" name="abbr" bind:value={value[0]} {onchange} />
 		<input class="input" type="text" name="targets" bind:value={value[1]} {onchange} />
 		<input class="input" type="number" name="offset" bind:value={value[2]} {onchange} />

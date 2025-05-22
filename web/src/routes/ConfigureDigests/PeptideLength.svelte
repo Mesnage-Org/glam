@@ -5,7 +5,7 @@
 
 	let checked = $state(value === null ? false : true);
 
-	function onCheckedChange(e) {
+	function onCheckedChange(e: any) {
 		checked = e.checked;
 		if (checked) {
 			value = 1;

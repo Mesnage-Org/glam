@@ -2,13 +2,13 @@ import { loadPyodide } from 'pyodide';
 
 // FIXME: Any type...
 function convert(proxy: any) {
-	let val = proxy.toJs({ dict_converter: Object.fromEntries });
+	const val = proxy.toJs({ dict_converter: Object.fromEntries });
 	proxy.destroy();
 	return val;
 }
 
 function global(name: string) {
-	let proxy = pyodide.globals.get(name);
+	const proxy = pyodide.globals.get(name);
 	return convert(proxy);
 }
 

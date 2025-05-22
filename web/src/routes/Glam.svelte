@@ -7,7 +7,6 @@
 	import { Progress } from '@skeletonlabs/skeleton-svelte';
 
 	// Internal Components
-	import FileDropzone from './FileDropzone.svelte';
 	import ConfigureDigests from './ConfigureDigests.svelte';
 	import ConfigureGlycosylation from './ConfigureGlycosylation.svelte';
 	import ConfigureModifications from './ConfigureModifications.svelte';
@@ -30,6 +29,7 @@
 			switch (msg.type) {
 				case 'Ready':
 					for (const key of Object.keys(msg.initData)) {
+						// @ts-expect-error need to add a type to `msg` to convince TS that keys will line up here
 						initData[key] = new Map(Object.entries(msg.initData[key]));
 					}
 					break;

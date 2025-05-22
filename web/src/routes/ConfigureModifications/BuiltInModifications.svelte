@@ -25,7 +25,7 @@
 	</div>
 {:else}
 	<select class="select rounded-container overflow-y-auto" multiple bind:value {onchange}>
-		{#each initData.modifications.keys() as name}
+		{#each initData.modifications.keys() as name (name)}
 			<option value={name}>{name}</option>
 		{/each}
 	</select>

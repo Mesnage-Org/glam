@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getInitData, getParameters } from '$lib/state.svelte';
+	import { getParameters } from '$lib/state.svelte';
 
 	// External Components
 	import { Tabs } from '@skeletonlabs/skeleton-svelte';

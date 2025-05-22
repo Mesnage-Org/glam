@@ -1,7 +1,7 @@
 import { getContext, setContext } from 'svelte';
 
-let initDataKey = Symbol('initData');
-let parametersKey = Symbol('parameters');
+const initDataKey = Symbol('initData');
+const parametersKey = Symbol('parameters');
 
 export function setInitData(initData: InitData) {
 	setContext(initDataKey, initData);

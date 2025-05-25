@@ -8,7 +8,7 @@
 	import AdvancedOptions from '../Shared Components/AdvancedOptions.svelte';
 	import MissedCleavages from './ConfigureDigests/MissedCleavages.svelte';
 	import OptionalCount from '../Shared Components/OptionalCount.svelte';
-	import SemiSpecific from './ConfigureDigests/SemiSpecific.svelte';
+	import Toggle from '../Shared Components/Toggle.svelte';
 	import BuiltInDigestions from './ConfigureDigests/BuiltInDigestions.svelte';
 
 	let digestSettings = getParameters().digestSettings;
@@ -40,7 +40,7 @@
 			<hr class="border-surface-200-800" />
 			<OptionalCount label="Maximum Peptide Length" bind:value={digestSettings.maxLength} />
 			<hr class="border-surface-200-800" />
-			<SemiSpecific bind:value={digestSettings.semiEnzymatic} />
+			<Toggle label="Semi-Specific Cleavage" bind:value={digestSettings.semiEnzymatic} />
 		</AdvancedOptions>
 	</form>
 </div>

@@ -28,31 +28,30 @@
 
 <div class="w-full">
 	<!-- Stepper -->
-	<div class="space-y-8">
+	<div class="space-y-4">
 		<!-- Timeline -->
 		<div class="relative">
 			<!-- Numerals -->
-			<div class="flex items-center justify-between gap-4">
+			<div class="flex items-center justify-between">
 				{#each steps as step, i (step.title)}
 					<!-- Numeral Button -->
 					<button
-						class="btn-icon btn-icon-sm rounded-full {isCurrentStep(i)
+						class="z-10 rounded-full px-2 py-1 text-xs {isCurrentStep(i)
 							? 'preset-filled-primary-500'
 							: 'preset-filled-surface-200-800'}"
 						onclick={() => setStep(i)}
 						title={step.title}
 					>
-						<span class="font-bold">{i + 1}</span>
+						<span class="font-bold">{i + 1}. {step.title}</span>
 					</button>
 				{/each}
 			</div>
 			<!-- Line -->
-			<hr class="hr !border-surface-200-800 absolute top-[50%] right-0 left-0 z-[-1]" />
+			<hr class="hr !border-surface-200-800 absolute top-[50%] right-0 left-0 border-t-2" />
 		</div>
 		<!-- Loop all steps -->
 		{#each steps as step, i (step)}
 			<div class={['flex flex-col gap-4', !isCurrentStep(i) && 'hidden']}>
-				<h4 class="h4">{step.title}</h4>
 				<step.component {...step.props} />
 			</div>
 		{/each}

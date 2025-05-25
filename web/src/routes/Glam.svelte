@@ -4,15 +4,13 @@
 	import { InitData, Parameters, setInitData, setParameters } from '$lib/state.svelte';
 	import fileDownload from 'js-file-download';
 
+	// External Components
 	import { Progress } from '@skeletonlabs/skeleton-svelte';
 
 	// Internal Components
-	import ConfigureDigests from './ConfigureDigests.svelte';
-	import ConfigureGlycosylation from './ConfigureGlycosylation.svelte';
-	import ConfigureModifications from './ConfigureModifications.svelte';
+	import AttachGlycans from './Attach Glycans.svelte';
+	import GeneratePeptides from './Generate Peptides.svelte';
 	import Stepper from './Stepper.svelte';
-	import UploadProtein from './UploadProtein.svelte';
-	import UploadGlycans from './UploadGlycans.svelte';
 
 	let initData: InitData = new InitData();
 	let parameters: Parameters = new Parameters();
@@ -68,30 +66,18 @@
 	// Step Components
 	const steps = [
 		{
-			title: 'Upload Protein',
-			component: UploadProtein
+			title: 'Generate Peptides',
+			component: GeneratePeptides
 		},
 		{
-			title: 'Specify Digests',
-			component: ConfigureDigests
-		},
-		{
-			title: 'Upload Glycans',
-			component: UploadGlycans
-		},
-		{
-			title: 'Specify Glycosylation Motifs',
-			component: ConfigureGlycosylation
-		},
-		{
-			title: 'Specify Modifications',
-			component: ConfigureModifications
+			title: 'Attach Glycans',
+			component: AttachGlycans
 		}
 	];
 </script>
 
 <article
-	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 flex w-96 flex-col gap-4 border-2 p-4 text-center"
+	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 m-8 flex flex-col gap-4 border-2 p-4 text-center"
 >
 	<Stepper {steps} {isReady} {onFinish} />
 	{#if glamBusy}

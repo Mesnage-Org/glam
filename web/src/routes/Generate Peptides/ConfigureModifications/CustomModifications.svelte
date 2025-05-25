@@ -30,10 +30,11 @@
 		<label class="label label-text" for="targets">Target Residues</label>
 		<label class="label label-text" for="offset">Mass Offset</label>
 	{/if}
-	{#each joinedModifications as value, i (value[0])}
+	<!-- eslint-disable-next-line svelte/require-each-key -->
+	{#each joinedModifications as value, i}
 		<input class="input col-start-1" type="text" name="abbr" bind:value={value[0]} {onchange} />
 		<input class="input" type="text" name="targets" bind:value={value[1]} {onchange} />
-		<input class="input" type="number" name="offset" bind:value={value[2]} {onchange} />
+		<input class="input" type="number" step="any" name="offset" bind:value={value[2]} {onchange} />
 		<button
 			type="button"
 			class="btn-icon hover:preset-tonal"

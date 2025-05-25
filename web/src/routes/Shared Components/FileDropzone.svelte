@@ -10,7 +10,8 @@
 
 <FileUpload
 	onFileAccept={async (f: any) => onFileAccept(await f.files[0].text())}
-	classes="w-full"
+	classes="w-full grow flex! flex-col"
+	interfaceClasses="grow justify-center-safe"
 	{subtext}
 	{accept}
 >

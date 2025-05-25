@@ -140,15 +140,17 @@ def digest_protein(
 
 def modify_peptides(
     peptides: set[Peptide],
-    mods: Iterable[Modification],
-    max_mods: int | None = None,
+    modifications: Iterable[Modification],
+    max_modifications: int | None,
 ) -> set[Peptide]:
-    variable_mods = {n: ts for (n, ts, _) in mods}
+    variable_modifications = {n: ts for (n, ts, _) in modifications}
     return {
         peptide._replace(sequence=isoform)
         for peptide in peptides
         for isoform in pyteomics.parser.isoforms(
-            peptide.sequence, variable_mods=variable_mods
+            peptide.sequence,
+            variable_mods=variable_modifications,
+            max_mods=max_modifications,
         )
     }
 
@@ -184,11 +186,11 @@ def filter_glycopeptide_candidates(
 
 
 def peptide_masses(
-    peptides: set[Peptide], mods: Iterable[Modification] = []
+    peptides: set[Peptide], modifications: Iterable[Modification]
 ) -> set[Peptide]:
     def mass(peptide: Peptide) -> float:
-        mod_masses = {n: m for (n, _, m) in mods}
-        aa_mass = pyteomics.mass.std_aa_mass | mod_masses
+        modification_masses = {n: m for (n, _, m) in modifications}
+        aa_mass = pyteomics.mass.std_aa_mass | modification_masses
         try:
             return pyteomics.mass.fast_mass2(peptide.sequence, aa_mass=aa_mass)
         except PyteomicsError as e:

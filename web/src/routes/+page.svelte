@@ -2,6 +2,6 @@
 	import Glam from './Glam.svelte';
 </script>
 
-<main class="flex h-screen items-center justify-center">
+<main class="flex h-dvh items-center-safe justify-center-safe overflow-auto">
 	<Glam />
 </main>

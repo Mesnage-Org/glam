@@ -8,6 +8,11 @@
 
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
+@theme {
+	--breakpoint-gp: 70rem;
+	--breakpoint-ag: 53rem;
+}
+
 @layer base {
 	input[type='number']::-webkit-outer-spin-button,
 	input[type='number']::-webkit-inner-spin-button,
@@ -15,5 +20,10 @@
 		-webkit-appearance: none;
 		margin: 0;
 		-moz-appearance: textfield !important;
+	}
+
+	/* Hack to grow the FileUpload component from Skeleton */
+	[data-part='dropzone'] {
+		@apply flex grow flex-col;
 	}
 }

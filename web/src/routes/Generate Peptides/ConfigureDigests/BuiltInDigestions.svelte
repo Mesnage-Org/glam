@@ -23,7 +23,12 @@
 		/>
 	</div>
 {:else}
-	<select class="select rounded-container overflow-y-auto" multiple bind:value {onchange}>
+	<select
+		class="select rounded-container gp:min-h-78 overflow-y-auto"
+		multiple
+		bind:value
+		{onchange}
+	>
 		{#each initData.digestions.keys() as name (name)}
 			<option value={name}>{name}</option>
 		{/each}

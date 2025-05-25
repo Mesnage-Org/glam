@@ -6,7 +6,7 @@
 
 	// Internal Components
 	import AdvancedOptions from '../Shared Components/AdvancedOptions.svelte';
-	import AllPeptides from './ConfigureGlycosylation/AllPeptides.svelte';
+	import Toggle from '../Shared Components/Toggle.svelte';
 	import BuiltInMotifs from './ConfigureGlycosylation/BuiltInMotifs.svelte';
 	import OptionalCount from '../Shared Components/OptionalCount.svelte';
 
@@ -35,7 +35,10 @@
 		<AdvancedOptions>
 			<OptionalCount label="Maximum Glycan Count" bind:value={glycosylationSettings.maxGlycans} />
 			<hr class="border-surface-200-800" />
-			<AllPeptides bind:value={glycosylationSettings.allPeptides} />
+			<Toggle
+				label="Include Non-Glycosylated Peptides"
+				bind:value={glycosylationSettings.allPeptides}
+			/>
 		</AdvancedOptions>
 	</form>
 </div>

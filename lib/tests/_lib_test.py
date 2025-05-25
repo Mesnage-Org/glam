@@ -139,7 +139,22 @@ def test_modify_peptides() -> None:
             "cmCATS",
         ]
     }
-    assert modify_peptides(peptides, MODIFICATIONS.values()) == modified_peptides
+    assert modify_peptides(peptides, MODIFICATIONS.values(), None) == modified_peptides
+
+
+def test_modify_peptides_with_max() -> None:
+    peptides = {Peptide(s, POS) for s in ["CARNAGE", "CATS"]}
+    modified_peptides = {
+        Peptide(s, POS)
+        for s in [
+            "CARNAGE",
+            "cmCARNAGE",
+            "CARdaNAGE",
+            "CATS",
+            "cmCATS",
+        ]
+    }
+    assert modify_peptides(peptides, MODIFICATIONS.values(), 1) == modified_peptides
 
 
 def test_find_glycosylation_sites() -> None:
@@ -185,7 +200,7 @@ def test_filter_glycopeptides() -> None:
 
 
 def test_peptide_masses() -> None:
-    masses = peptide_masses({Peptide(s, POS) for s in ["PEPTIDE", "TIME"]})
+    masses = peptide_masses({Peptide(s, POS) for s in ["PEPTIDE", "TIME"]}, [])
     assert masses == {
         Peptide(s, POS, m)
         for s, m in [("PEPTIDE", 799.3599640267099), ("TIME", 492.2253851302)]
@@ -193,7 +208,7 @@ def test_peptide_masses() -> None:
 
 
 def test_modified_peptide_masses() -> None:
-    masses = peptide_masses({Peptide("PcmEPTIdaDE", POS)}, mods=MODIFICATIONS.values())
+    masses = peptide_masses({Peptide("PcmEPTIdaDE", POS)}, MODIFICATIONS.values())
     assert masses == {
         Peptide("PcmEPTIdaDE", POS, 799.3599640267099 + 57.021464 + 0.984016)
     }
@@ -201,7 +216,7 @@ def test_modified_peptide_masses() -> None:
 
 def test_peptide_masses_raises() -> None:
     with pytest.raises(ValueError) as e:
-        peptide_masses({Peptide("PEPTIXE", POS)})
+        peptide_masses({Peptide("PEPTIXE", POS)}, [])
     assert str(e.value) == (
         "Unknown amino acid residue found in 'PEPTIXE': "
         "Mass not specified for label(s): X"

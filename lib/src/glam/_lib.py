@@ -66,7 +66,7 @@ def glycan_mass(glycan_name: str) -> float:
     # Try to parse the string as a fully-defined structure first
     try:
         mass = glycowork.glycan_to_mass(glycan_name)
-    except KeyError:
+    except (KeyError, IndexError):
         # But if that fails, then try just parsing it as a sugar composition
         try:
             mass = glycowork.composition_to_mass(glycan_name)

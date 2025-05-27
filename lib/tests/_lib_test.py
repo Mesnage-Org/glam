@@ -60,7 +60,7 @@ def test_glycan_mass() -> None:
     iupac_structure = "Neu5Ac(a2-3)Gal6S(b1-3)[Neu5Ac(a2-6)]GalNAc"
     assert glycan_mass(iupac_structure) == 1045.2903546
 
-    byonic_composition = "HexNAc(2)Hex(3)Pent(1)dHex(1)"
+    byonic_composition = "HexNAc2Hex3Pent1dHex1"
     assert glycan_mass(byonic_composition) == 1188.4279546
 
     oxford_notation = "FA2G2S1"

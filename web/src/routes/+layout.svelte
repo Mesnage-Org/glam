@@ -3,6 +3,7 @@
 	import { base } from '$app/paths';
 	import '../app.css';
 	import { SiGithub } from '@icons-pack/svelte-simple-icons';
+	import CitationModal from './CitationModal.svelte';
 	let { children } = $props();
 </script>
 
@@ -38,12 +39,15 @@
 
 	<!-- FOOTER: fixed at bottom of the flex container -->
 	<footer
-		class="p-4 text-center text-sm"
+		class="p-4 flex items-center justify-between"
 		style="background-color: var(--skeleton-secondary); color: white;"
 	>
-		Any issues or suggestions? Please get in touch!<br />
-		<a href="mailto:smesnage@sheffield.ac.uk" class="font-semibold text-white hover:underline">
-			smesnage@sheffield.ac.uk
-		</a>
+		<CitationModal />
+		<p class="text-right text-sm">
+			Any issues or suggestions? Please get in touch!<br />
+			<a href="mailto:smesnage@sheffield.ac.uk" class="font-semibold hover:underline">
+				smesnage@sheffield.ac.uk
+			</a>
+		</p>
 	</footer>
 </div>

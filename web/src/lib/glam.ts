@@ -23,7 +23,8 @@ const pyodide = await loadPyodide({
 await pyodide.loadPackage(['micropip']);
 const micropip = pyodide.pyimport('micropip');
 
-await micropip.install(`${base}/theglam-1.2.0-py3-none-any.whl`);
+await micropip.install(['glycorender==0.2.0', `${base}/theglam-1.2.0-py3-none-any.whl`]);
+
 await pyodide.runPythonAsync('from glam import *');
 const generate_glycopeptides = pyodide.globals.get('generate_glycopeptides');
 

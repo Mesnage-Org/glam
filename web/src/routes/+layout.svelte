@@ -10,15 +10,11 @@
 <!-- Full‐height flex container -->
 <div class="flex h-screen flex-col">
 	<!-- HEADER: fixed at top of the flex container -->
-	<header class="p-4" style="background-color: var(--skeleton-secondary); color: white;">
+	<header class="p-4">
 		<div class="flex items-center justify-between">
 			<span class="text-xl font-bold">GLAM</span>
 			<nav class="flex gap-4">
-				<a
-					href="https://mesnage-org.github.io/pgfinder"
-					target="_blank"
-					class="text-white hover:underline"
-				>
+				<a href="https://mesnage-org.github.io/pgfinder" target="_blank" class="hover:underline">
 					PGFinder
 				</a>
 				<a href="{base}/docs/glam/index.html" target="_blank">
@@ -38,10 +34,7 @@
 	</main>
 
 	<!-- FOOTER: fixed at bottom of the flex container -->
-	<footer
-		class="p-4 flex items-center justify-between"
-		style="background-color: var(--skeleton-secondary); color: white;"
-	>
+	<footer class="flex items-center justify-between p-4">
 		<CitationModal />
 		<p class="text-right text-sm">
 			Any issues or suggestions? Please get in touch!<br />

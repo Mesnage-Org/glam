@@ -12,9 +12,9 @@
 	<!-- HEADER: fixed at top of the flex container -->
 	<header class="p-4">
 		<div class="flex items-center justify-between">
-			<span class="text-xl font-bold">GLAM</span>
+			<span class="text-4xl font-bold">GLAM</span>
 			<nav class="flex gap-4">
-				<a href="https://mesnage-org.github.io/pgfinder" target="_blank" class="hover:underline">
+				<a href="https://mesnage-org.github.io/pgfinder" target="_blank" class="text-lg hover:underline">
 					PGFinder
 				</a>
 				<a href="{base}/docs/glam/index.html" target="_blank">

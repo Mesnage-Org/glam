@@ -27,7 +27,8 @@
 	</header>
   
 	<!-- MAIN: grows to fill available space and scrolls internally -->
-	<main class="flex-1 overflow-auto p-6">
+	<main class="flex h-dvh items-center-safe justify-center-safe overflow-auto">
+	
 	  {@render children()}
 	</main>
   

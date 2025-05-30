@@ -1,8 +1,8 @@
 <script lang="ts">
-	let { steps, isReady, onFinish } = $props();
+	let { steps } = $props();
 
 	// Icons
-	import { ArrowLeft, ArrowRight, Download } from 'lucide-svelte';
+	import { ArrowLeft, ArrowRight } from 'lucide-svelte';
 
 	// Reactive
 	let currentStep = $state(0);
@@ -26,17 +26,17 @@
 	}
 </script>
 
-<div class="w-full">
+<div class="w-full max-w-min">
 	<!-- Stepper -->
 	<div class="space-y-4">
 		<!-- Timeline -->
 		<div class="relative">
 			<!-- Numerals -->
-			<div class="flex items-center justify-between">
+			<div class="flex items-center justify-between gap-4">
 				{#each steps as step, i (step.title)}
 					<!-- Numeral Button -->
 					<button
-						class="z-10 rounded-full px-2 py-1 text-sm {isCurrentStep(i)
+						class="z-10 rounded-xl px-2 py-1 text-sm {isCurrentStep(i)
 							? 'preset-filled-primary-500'
 							: 'preset-filled-surface-200-800'}"
 						onclick={() => setStep(i)}
@@ -72,16 +72,6 @@
 				<button type="button" class="btn preset-tonal hover:preset-filled" onclick={nextStep}>
 					<span>Next</span>
 					<ArrowRight size={18} />
-				</button>
-			{:else}
-				<button
-					type="button"
-					class={['btn preset-tonal-success', isReady && 'hover:preset-filled-success-700-300']}
-					onclick={onFinish}
-					disabled={!isReady}
-				>
-					<span>Run Analysis</span>
-					<Download size={18} />
 				</button>
 			{/if}
 		</nav>

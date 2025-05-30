@@ -10,7 +10,8 @@
 
 @theme {
 	--breakpoint-gp: 70rem;
-	--breakpoint-ag: 53rem;
+	--breakpoint-ag: 54rem;
+	--breakpoint-bd: 37rem;
 }
 
 @layer base {

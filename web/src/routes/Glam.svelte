@@ -11,6 +11,7 @@
 	import AttachGlycans from './Attach Glycans.svelte';
 	import GeneratePeptides from './Generate Peptides.svelte';
 	import Stepper from './Stepper.svelte';
+	import BuildDatabase from './Build Database.svelte';
 
 	let initData: InitData = new InitData();
 	let parameters: Parameters = new Parameters();
@@ -72,6 +73,11 @@
 		{
 			title: 'Attach Glycans',
 			component: AttachGlycans
+		},
+		{
+			title: 'Build Database',
+			component: BuildDatabase,
+			props: { isReady: () => isReady, onFinish: () => onFinish }
 		}
 	];
 </script>
@@ -79,7 +85,7 @@
 <article
 	class="w-max-[80%] card border-surface-200-800 preset-filled-surface-100-900 m-8 flex flex-col gap-4 border-2 p-4 text-center"
 >
-	<Stepper {steps} {isReady} {onFinish} />
+	<Stepper {steps} />
 	{#if glamBusy}
 		<Progress value={null} />
 	{/if}

@@ -36,7 +36,7 @@
 				{#each steps as step, i (step.title)}
 					<!-- Numeral Button -->
 					<button
-						class="z-10 rounded-full px-2 py-1 text-xs {isCurrentStep(i)
+						class="z-10 rounded-full px-2 py-1 text-sm {isCurrentStep(i)
 							? 'preset-filled-primary-500'
 							: 'preset-filled-surface-200-800'}"
 						onclick={() => setStep(i)}

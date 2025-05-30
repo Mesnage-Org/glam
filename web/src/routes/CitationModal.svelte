@@ -7,7 +7,7 @@
 <Modal
 	open={openState}
 	onOpenChange={(e: any) => (openState = e.open)}
-	triggerBase="text-2xl hover:underline"
+	triggerBase="text-xl hover:underline"
 	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl w-3xl max-h-9/10 overflow-auto"
 	backdropClasses="backdrop-blur-sm"
 >

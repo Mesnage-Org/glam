@@ -14,15 +14,12 @@
 		<div class="flex items-center justify-between">
 			<span class="text-4xl font-bold">GLAM</span>
 			<nav class="flex gap-4">
-				<a href="https://mesnage-org.github.io/pgfinder" target="_blank" class="text-lg hover:underline">
-					PGFinder
-				</a>
 				<a href="{base}/docs/glam/index.html" target="_blank">
-					<BookText />
+					<BookText size={30} />
 				</a>
 
 				<a href="https://github.com/Mesnage-Org/glam" target="_blank">
-					<SiGithub />
+					<SiGithub size={30} />
 				</a>
 			</nav>
 		</div>

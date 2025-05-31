@@ -71,6 +71,7 @@ DIGESTIONS: dict[str, str] = {
     "Pepsin (pH 1.3)": r"((?<=[^HKR][^P])[^R](?=[FL][^P]))|((?<=[^HKR][^P])[FL](?=\w[^P]))",
     "Pepsin (pH 2.0)": r"((?<=[^HKR][^P])[^R](?=[FLWY][^P]))|((?<=[^HKR][^P])[FLWY](?=\w[^P]))",
     "Proline Endopeptidase": r"(?<=[HKR])P(?!P)",
+    "Pronase": r"\w",
     "Proteinase K": r"[AEFILTVWY]",
     "Staphylococcal Peptidase I": r"(?<=[^E])E",
     "Thermolysin": r"[^DE](?=[AFILMV][^P])",

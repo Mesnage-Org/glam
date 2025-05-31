@@ -2,6 +2,10 @@
 A small package for generating
 [PGFinder](https://github.com/Mesnage-Org/pgfinder)-compatible glycopeptide
 databases.
+
+For a complete tutorial on how GLAM and PGFinder can be used to find unusual
+glycopeptides, check out this
+[YouTube video](https://youtu.be/iK8Y5ZW-e98?si=48ZJZ_U38-v2Nnrk).
 """
 
 # Imports ======================================================================

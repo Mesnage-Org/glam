@@ -7,7 +7,7 @@
 	<button
 		type="button"
 		class={[
-			'btn preset-tonal-success bd:min-w-120 h-32 w-full min-w-80 space-x-2 rounded-xl text-2xl',
+			'btn preset-tonal-success bd:min-w-124 h-32 w-full min-w-80 space-x-2 rounded-xl text-2xl',
 			isReady() && 'hover:preset-filled-success-700-300'
 		]}
 		onclick={onFinish()}

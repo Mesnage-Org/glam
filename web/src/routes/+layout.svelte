@@ -35,8 +35,8 @@
 		<CitationModal />
 		<p class="text-right text-sm">
 			Any issues or suggestions? Please get in touch!<br />
-			<a href="mailto:smesnage@sheffield.ac.uk" class="font-semibold hover:underline">
-				smesnage@sheffield.ac.uk
+			<a href="mailto:s.mesnage@sheffield.ac.uk" class="font-semibold hover:underline">
+				s.mesnage@sheffield.ac.uk
 			</a>
 		</p>
 	</footer>

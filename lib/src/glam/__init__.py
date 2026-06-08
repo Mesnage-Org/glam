@@ -5,7 +5,7 @@ databases.
 
 For a complete tutorial on how GLAM and PGFinder can be used to find unusual
 glycopeptides, check out this
-[YouTube video](https://youtu.be/iK8Y5ZW-e98?si=48ZJZ_U38-v2Nnrk).
+[YouTube video](https://youtu.be/iK8Y5ZW-e98).
 """
 
 # Imports ======================================================================

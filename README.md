@@ -1,6 +1,10 @@
 # GLAM
 GLycan Analysis Module
 
+See this YouTube video for an introduction to GLAM (click the image):
+
+[<img src="https://img.youtube.com/vi/iK8Y5ZW-e98/maxresdefault.jpg">](https://youtu.be/iK8Y5ZW-e98)
+
 # Documentation
 
 Docstrings are used to automatically generate documentation for `glam`.

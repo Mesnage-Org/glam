@@ -17,13 +17,14 @@ function global(name: string) {
 // These files can also be hosted locally from `/static` if something ever
 // happens to this CDN, but there will be some build-system demons to battle.
 const pyodide = await loadPyodide({
-	indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.6/full/'
+	indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.6/full/',
+	lockFileURL: `${base}/pyodide-lock.json`
 });
 
+// NOTE: You can use `micropip.freeze()` to update the `pyodide-lock.json`
 await pyodide.loadPackage(['micropip']);
 const micropip = pyodide.pyimport('micropip');
-
-await micropip.install(['glycorender==0.2.0', `${base}/theglam-1.2.1-py3-none-any.whl`]);
+await micropip.install(`${base}/theglam-1.2.1-py3-none-any.whl`);
 
 await pyodide.runPythonAsync('from glam import *');
 const generate_glycopeptides = pyodide.globals.get('generate_glycopeptides');
